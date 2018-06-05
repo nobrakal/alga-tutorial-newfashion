@@ -28,3 +28,4 @@ install:
 script:
 # Build the package
 - stack --no-terminal build
+- stack --no-terminal test
