@@ -10,7 +10,7 @@ import qualified Data.Text as T
 mod0 :: Module
 mod0 = Module
   {
-  desc = "Algebraic graphs ? Again mathematics and computer science mixed ? Follow the tour",
+  desc = "Algebraic graphs ? Again mathematics and computer science mixed ? Follow the tour.",
   subs = [s00, s01, s02, s03, s03]
   }
 
@@ -47,10 +47,9 @@ s03  = SubModule
   , instruction = "How would you describe a graph that Connect a single vertex 0 to a single vertex 1 ?"
   , clue = "Maybe simply by writing the thing down"
   , answer = Left "Connect (Vertex 0) (Vertex 1)"
-  , conclusion = "Well you have found the definition of the Graph in Alga: " `T.append` T.justifyRight 14 ' ' (T.unlines
-        [ "data Graph a = Empty"
-        , "Vertex a"
-        , "Overlay (Graph a) (Graph a)"
-        , "Connect (Graph a) (Graph a)"
+  , conclusion = "Well you have found the definition of the Graph in Alga: \ndata Graph a = Empty\n" `T.append` T.unlines (map (T.append (T.replicate 13 (T.singleton ' ')))
+        [ "| Vertex a"
+        , "| Overlay (Graph a) (Graph a)"
+        , "| Connect (Graph a) (Graph a)"
         ])
   }
