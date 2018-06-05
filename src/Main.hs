@@ -50,19 +50,19 @@ runModules arr = forM_ arr $ \m@(Module desc subs) -> do
   runSubModules subs
 
 runSubModules :: [SubModule] -> IO ()
-runSubModules arr = forM_ arr $ \(SubModule abstract instruction clue answer conclusion) -> do
+runSubModules arr = forM_ arr $ \(SubModule abstract instruction clue answer verify conclusion) -> do
   T.putStrLn abstract
   breakLine
   T.putStrLn instruction
   breakLine
-  runInputT defaultSettings' $ runSubModule clue answer conclusion
+  runInputT defaultSettings' $ runSubModule clue answer verify conclusion
   breakLine
   where
     defaultSettings' = defaultSettings {historyFile = Just ".history"}
 
-runSubModule :: T.Text -> Either T.Text T.Text -> T.Text -> InputT IO ()
-runSubModule clue answer conclusion = do
-  res <- runQuestion clue answer conclusion
+runSubModule :: T.Text -> T.Text -> T.Text -> T.Text -> InputT IO ()
+runSubModule clue answer verify conclusion = do
+  res <- runQuestion clue answer verify conclusion
   case res of
     Nothing -> liftIO $ T.putStrLn conclusion
     Just res' ->
@@ -75,33 +75,32 @@ runSubModule clue answer conclusion = do
            liftIO $ do
              doInColor Red $ putStrLn "Wrong answer"
              breakLine
-           runSubModule clue answer conclusion
+           runSubModule clue answer verify conclusion
 
-runQuestion :: T.Text -> Either T.Text T.Text -> T.Text -> InputT IO (Maybe Bool)
-runQuestion clue a@(Left answer') conclusion = do
+runQuestion :: T.Text -> T.Text -> T.Text -> T.Text -> InputT IO (Maybe Bool)
+runQuestion clue answer verify conclusion = do
   answerUser <- runInputT defaultSettings $ fromMaybe (error "Nothing as input") <$> getInputLine "λ: "
   case answerUser of
-    "help" -> liftIO (T.putStrLn help) >> runQuestion clue a conclusion
+    "help" -> liftIO (T.putStrLn help) >> runQuestion clue answer verify conclusion
     "quit" -> liftIO $ die "Bye"
     "clue" -> do
       liftIO $ do
         doInColor Blue $ putStr "Clue: "
         T.putStrLn clue
-      runQuestion clue a conclusion
+      runQuestion clue answer verify conclusion
     "skip" -> liftIO $ do
       doInColor Blue $ putStr "Skipping: "
       putStr "The solution was: \""
-      T.putStr answer'
+      T.putStr answer
       putStrLn "\""
       return Nothing
     au -> do
-      res <- liftIO $ mueval $ "(" ++ answerUser ++ ") == (" ++ T.unpack answer' ++ " :: Graph Int )"
+      res <- liftIO $ mueval $ T.unpack verify ++ " (" ++ answerUser ++ ") (" ++ T.unpack answer ++ " :: Graph Int )"
       case res of
         (Right (_,_,val)) -> return $ Just $ val == "True"
         Left e -> do
           liftIO $ doInColor Red $ T.putStrLn e
           return $ Just False
-runQuestion _ _ _ = error "Right ? Right !"
 
 breakLine :: IO ()
 breakLine = putStr "\n"
