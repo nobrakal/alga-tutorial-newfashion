@@ -26,7 +26,7 @@ modules = [mod0]
 
 help :: T.Text
 help = T.unlines
-  [ "Help"
+  [ "Help: "
   , "Type \"help\" to show this message"
   , "Type \"quit\" to quit"
   , "Type \"clue\" to have a clue on the current goal"
@@ -35,6 +35,9 @@ help = T.unlines
 
 main :: IO ()
 main = do
+  -- Start the interpreter
+  putStrLn "STARTING..."
+  _ <- evalIt "True == False"
   putStrLn "Welcome in alga-tutorial, this will teach you the basis of algebraic-graphs"
   breakLine
   doInItalic $ putStrLn "Type \"help\" to get help"
@@ -44,7 +47,7 @@ main = do
 runModules :: [Module] -> IO ()
 runModules arr = forM_ arr $ \m@(Module name desc subs) -> do
   let (Just pos) = elemIndex m arr
-  putStr $ "Module "++ show pos ++ "/" ++ show (length arr) ++ ": "
+  doInItalic $ putStr $ "Module "++ show pos ++ "/" ++ show (length arr) ++ ": "
   T.putStrLn desc
   breakLine
   runSubModules subs
@@ -52,7 +55,7 @@ runModules arr = forM_ arr $ \m@(Module name desc subs) -> do
 runSubModules :: [SubModule] -> IO ()
 runSubModules arr = forM_ arr $ \s@(SubModule abstract instruction clue answer verify conclusion) -> do
   let (Just pos) = elemIndex s arr
-  putStr $ "SubModule "++ show pos ++ "/" ++ show (length arr) ++ ": "
+  doInItalic $ putStr $ "SubModule "++ show pos ++ "/" ++ show (length arr) ++ ": "
   T.putStrLn abstract
   breakLine
   T.putStrLn instruction
