@@ -1,0 +1,8 @@
+resolver: lts-11.12
+
+packages:
+- .
+
+extra-deps:
+- mueval-0.9.3
+- show-0.6
