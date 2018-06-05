@@ -11,7 +11,8 @@ data Module = Module {
 
 data SubModule = SubModule {
   abstract :: T.Text,
-  instructions :: T.Text,
+  instruction :: T.Text,
   clue :: T.Text,
-  answer :: Either T.Text T.Text -- Either a function or an expression
+  answer :: Either T.Text T.Text, -- Either a function or an expression
+  conclusion :: T.Text
 }

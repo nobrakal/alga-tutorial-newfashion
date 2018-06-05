@@ -17,7 +17,8 @@ s10 :: SubModule
 s10 = SubModule
   {
   abstract = "For example, we want something like \" overlays :: [Graph a] -> Graph a\". How can this be done ?",
-  instructions = "Write overlays",
+  instruction = "Write overlays",
   clue = "TODO",
-  answer = Right "overlays = foldr Overlay Empty"
+  answer = Right "overlays = foldr Overlay Empty",
+  conclusion = "TODO"
   }
