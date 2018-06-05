@@ -10,6 +10,7 @@ import qualified Data.Text as T
 mod0 :: Module
 mod0 = Module
   {
+  name = "Basics",
   desc = "Algebraic graphs ? Again mathematics and computer science mixed ? Follow the tour.",
   subs = [s00, s01, s02, s03, s04]
   }

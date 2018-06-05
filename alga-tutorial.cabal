@@ -18,14 +18,13 @@ cabal-version:       >=1.10
 executable tutorial
   main-is:             Main.hs
   other-modules:       Types
-                     , Mueval
+                     , Eval
                      , Module.Zero
                      , Module.One
   build-depends:       base >=4.10 && <5
                      , algebraic-graphs >=0.1.1.1 && <0.1.2
-                     , mueval >= 0.9 && < 0.10
+                     , hint >= 0.8.0 && <  0.9
                      , text >= 1.2.3.0 && <1.3
-                     , process >= 1.6.0 && < 1.7
                      , haskeline >= 0.7.4.2 && < 0.7.5
                      , ansi-terminal >= 0.8.0.4 && < 0.8.1
   hs-source-dirs:      src

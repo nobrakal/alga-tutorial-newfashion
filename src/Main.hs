@@ -5,10 +5,9 @@ module Main (main) where
 import Data.Foldable (forM_)
 import Control.Monad (when)
 import Data.Maybe (fromMaybe)
+import Data.List (elemIndex)
 import System.Exit
 import Control.Monad.IO.Class
-
-import Algebra.Graph
 
 import qualified Data.Text as T
 import qualified Data.Text.IO as T
@@ -19,7 +18,7 @@ import System.Console.ANSI
 
 import Module.Zero
 
-import Mueval
+import Eval
 import Types
 
 modules :: [Module]
@@ -43,14 +42,17 @@ main = do
   runModules modules
 
 runModules :: [Module] -> IO ()
-runModules arr = forM_ arr $ \m@(Module desc subs) -> do
-  putStr "Module: "
+runModules arr = forM_ arr $ \m@(Module name desc subs) -> do
+  let (Just pos) = elemIndex m arr
+  putStr $ "Module "++ show pos ++ "/" ++ show (length arr) ++ ": "
   T.putStrLn desc
   breakLine
   runSubModules subs
 
 runSubModules :: [SubModule] -> IO ()
-runSubModules arr = forM_ arr $ \(SubModule abstract instruction clue answer verify conclusion) -> do
+runSubModules arr = forM_ arr $ \s@(SubModule abstract instruction clue answer verify conclusion) -> do
+  let (Just pos) = elemIndex s arr
+  putStr $ "SubModule "++ show pos ++ "/" ++ show (length arr) ++ ": "
   T.putStrLn abstract
   breakLine
   T.putStrLn instruction
@@ -70,7 +72,6 @@ runSubModule clue answer verify conclusion = do
          then liftIO $ do
            doInColor Green $ putStrLn "Great, you find the right response"
            T.putStrLn conclusion
-           breakLine
          else do
            liftIO $ do
              doInColor Red $ putStrLn "Wrong answer"
@@ -95,9 +96,9 @@ runQuestion clue answer verify conclusion = do
       putStrLn "\""
       return Nothing
     au -> do
-      res <- liftIO $ mueval $ T.unpack verify ++ " (" ++ answerUser ++ ") (" ++ T.unpack answer ++ " :: Graph Int )"
+      res <- liftIO $ evalIt $ T.unpack verify ++ " (" ++ answerUser ++ ") (" ++ T.unpack answer ++ " :: Graph Int )"
       case res of
-        (Right (_,_,val)) -> return $ Just $ val == "True"
+        Right val -> return $ Just val
         Left e -> do
           liftIO $ doInColor Red $ T.putStrLn e
           return $ Just False

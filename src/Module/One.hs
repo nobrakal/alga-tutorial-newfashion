@@ -9,7 +9,8 @@ import Types
 mod1 :: Module
 mod1 = Module
   {
-  desc = "Ok we know how to create algebraic graphs, but doing everything with primitives can be long. We will try to add some tool in our bags",
+  name = "Basics 2",
+  desc = "Ok we know how to create algebraic graphs, but doing everything with primitives can be long. We will try to add some tools in our bag",
   subs = []
   }
 
