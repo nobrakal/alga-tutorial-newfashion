@@ -59,6 +59,7 @@ runSubModules arr = forM_ arr $ \(SubModule abstract instruction clue answer con
   T.putStrLn instruction
   breakLine
   runInputT defaultSettings' $ runSubModule clue answer conclusion
+  breakLine
   where
     defaultSettings' = defaultSettings {historyFile = Just ".history"}
 
