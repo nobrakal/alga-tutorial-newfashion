@@ -43,15 +43,12 @@ main = do
   runModules modules
 
 runModules :: [Module] -> IO ()
-runModules [] = return ()
-runModules (Module desc subs:xs) = do
-  putStr $ "Part " ++ show (length modules - length xs - 1) ++ ": "
+runModules arr = forM_ arr $ \m@(Module desc subs) -> do
+  putStr "Module: "
   T.putStrLn desc
   breakLine
   runSubModules subs
-  runModules xs
 
--- TODO fold
 runSubModules :: [SubModule] -> IO ()
 runSubModules arr = forM_ arr $ \(SubModule abstract instruction clue answer conclusion) -> do
   T.putStrLn abstract

@@ -2,8 +2,6 @@ module Types where
 
 import qualified Data.Text as T
 
-type Named a = (String,a)
-
 data Module = Module {
   desc :: T.Text,
   subs :: [SubModule]
