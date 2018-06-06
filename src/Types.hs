@@ -17,12 +17,12 @@ data SubModule = SubModule {
   abstract :: T.Text,
   instruction :: T.Text,
   clue :: T.Text,
-  answer :: Answer,
+  fullAnswer :: Answer,
   conclusion :: T.Text
 } deriving (Show)
 
 data Answer = Answer {
-  ans :: T.Text,
+  answer :: T.Text,
   typeOf :: T.Text,
   verify :: T.Text -- A function to verify the input (likely "==")
 } deriving (Show)

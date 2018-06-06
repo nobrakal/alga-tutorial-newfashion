@@ -1,9 +1,9 @@
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE RecordWildCards #-}
 
 module Main (main) where
 
 import Data.Foldable (forM_)
-import Control.Monad (when)
 import Data.Maybe (fromMaybe)
 import Data.List (elemIndex)
 import System.Exit
@@ -21,6 +21,8 @@ import Module.One
 
 import Eval
 import Types
+
+data Instruction = GoToModule Int | GoToSubModule Int | Skip
 
 modules :: [Module]
 modules = [mod0, mod1]
@@ -46,7 +48,7 @@ main = do
   runModules modules
 
 runModules :: [Module] -> IO ()
-runModules arr = forM_ arr $ \m@(Module name desc subs) -> do
+runModules arr = forM_ arr $ \m@Module{..}-> do
   let (Just pos) = elemIndex m arr
   doInItalic $ putStr $ "Module "++ show pos ++ "/" ++ show (length arr) ++ ": "
   T.putStrLn desc
@@ -54,34 +56,35 @@ runModules arr = forM_ arr $ \m@(Module name desc subs) -> do
   runSubModules subs
 
 runSubModules :: [SubModule] -> IO ()
-runSubModules arr = forM_ arr $ \s@(SubModule abstract instruction clue answer conclusion) -> do
+runSubModules arr = forM_ arr $ \s@SubModule{..} -> do
   let (Just pos) = elemIndex s arr
   doInItalic $ putStr $ "SubModule "++ show pos ++ "/" ++ show (length arr) ++ ": "
   T.putStrLn abstract
   breakLine
   T.putStrLn instruction
   breakLine
-  runInputT defaultSettings $ runSubModule clue answer conclusion
+  runSubModule clue fullAnswer conclusion
   breakLine
 
-runSubModule :: T.Text -> Answer -> T.Text -> InputT IO ()
-runSubModule clue answer conclusion = do
-  res <- runQuestion clue answer conclusion
+runSubModule :: T.Text -> Answer -> T.Text -> IO ()
+runSubModule clue ans conclusion = do
+  res <- runInputT defaultSettings $ runQuestion clue ans conclusion
   case res of
-    Nothing -> liftIO $ T.putStrLn conclusion
-    Just res' ->
+    Left i ->
+      case i of
+         Skip -> T.putStrLn conclusion
+    Right res' ->
       if res'
-         then liftIO $ do
+         then do
            doInColor Green $ putStrLn "Great, you find the right response"
            T.putStrLn conclusion
          else do
-           liftIO $ do
-             doInColor Red $ putStrLn "Wrong answer"
-             breakLine
-           runSubModule clue answer conclusion
+           doInColor Red $ putStrLn "Wrong answer"
+           breakLine
+           runSubModule clue ans conclusion
 
-runQuestion :: T.Text -> Answer -> T.Text -> InputT IO (Maybe Bool)
-runQuestion clue ans@(Answer answer typeOf verify) conclusion = do
+runQuestion :: T.Text -> Answer -> T.Text -> InputT IO (Either Instruction Bool)
+runQuestion clue ans@Answer{..} conclusion = do
   answerUser <- runInputT defaultSettings $ fromMaybe (error "Nothing as input") <$> getInputLine "λ: "
   case answerUser of
     "help" -> liftIO (T.putStrLn help) >> runQuestion clue ans conclusion
@@ -96,14 +99,14 @@ runQuestion clue ans@(Answer answer typeOf verify) conclusion = do
       putStr "The solution was: \""
       T.putStr answer
       putStrLn "\""
-      return Nothing
-    au -> do
+      return $ Left Skip
+    _ -> do
       res <- liftIO $ evalIt $ T.unpack verify ++ " (" ++ answerUser ++ ") (" ++ T.unpack answer ++ " :: " ++ T.unpack typeOf ++ " )"
       case res of
-        Right val -> return $ Just val
+        Right val -> return $ Right val
         Left e -> do
           liftIO $ doInColor Red $ T.putStrLn e
-          return $ Just False
+          return $ Right False
 
 breakLine :: IO ()
 breakLine = putStr "\n"
