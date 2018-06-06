@@ -24,7 +24,8 @@ data SubModule = SubModule {
 data Answer = Answer {
   answer :: T.Text,
   typeOf :: TypeOf,
-  verify :: T.Text -- A function to verify the input (likely "==")
+  verify :: T.Text, -- A function to verify the input (likely "==")
+  decl   :: [T.Text] -- A list of declarations, used in the answer
 } deriving (Show)
 
 data TypeOf = GraphInt

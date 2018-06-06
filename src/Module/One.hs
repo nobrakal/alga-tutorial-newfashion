@@ -25,7 +25,7 @@ s0 = SubModule
     ]
   , instruction = "Try to connect 'Vertex 0' and 'Vertex 1' with this syntax"
   , clue = "TODO"
-  , fullAnswer = Answer "Connect 0 1" Comparison "(<=)"
+  , fullAnswer = Answer "Connect 0 1" Comparison "(<=)" []
   , conclusion = "TODO"
   }
 
@@ -39,7 +39,7 @@ s1 = SubModule
     ]
   , instruction = "Try to connect 'Vertex 0' and 'Vertex 1' with this syntax, and with what we have seen before"
   , clue = "TODO"
-  , fullAnswer = Answer "0 * 1" Comparison "(<=)"
+  , fullAnswer = Answer "0 * 1" Comparison "(<=)" []
   , conclusion = "TODO"
   }
 
@@ -51,7 +51,7 @@ s2 = SubModule
       ]
   , instruction = "What can be this neutral element ?"
   , clue = "TODO"
-  , fullAnswer = Answer "Empty" GraphInt "(==)"
+  , fullAnswer = Answer "Empty" GraphInt "(==)" []
   , conclusion = "TODO"
   }
 
@@ -63,6 +63,6 @@ s3 = SubModule
       ]
   , instruction = "What can be this neutral element ?"
   , clue = "TODO"
-  , fullAnswer = Answer "Empty" GraphInt "(==)"
+  , fullAnswer = Answer "Empty" GraphInt "(==)" []
   , conclusion = "TODO"
   }

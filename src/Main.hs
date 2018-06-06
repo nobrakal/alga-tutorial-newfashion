@@ -20,6 +20,7 @@ import System.Console.ANSI
 import Module.Zero
 import Module.One
 import Module.Two
+import Module.Three
 
 import Eval
 import Types
@@ -27,7 +28,7 @@ import Types
 data Instruction = GoToModule Int | GoToSubModule Int | Skip | Help | Clue
 
 modules :: [Module]
-modules = [mod0, mod1, mod2]
+modules = [mod0, mod1, mod2, mod3]
 
 help :: Int -> T.Text
 help n = T.unlines
@@ -121,7 +122,7 @@ runQuestion Answer{..} = do
     ("module":xs:_) -> return $ Left $ GoToModule $ read xs
     ("submodule":xs:_) -> return $ Left $ GoToSubModule $ read xs
     _ -> do
-      res <- liftIO $ evalIt $ T.unpack verify ++ case typeOf of
+      res <- liftIO $ evalIt $ "let " ++ T.unpack (T.intercalate ";" decl) ++ " in " ++ T.unpack verify ++ case typeOf of
         GraphInt -> " (" ++ answerUser ++ ") (" ++ T.unpack answer ++" :: Graph Int )"
         Str -> " \"" ++ answerUser ++ "\" \"" ++ T.unpack answer ++ "\""
         Comparison -> show (length answerUser) ++ " " ++ show (T.length answer) ++ " && (==)" ++ " (" ++ answerUser ++ ") (" ++ T.unpack answer ++" :: Graph Int )"
