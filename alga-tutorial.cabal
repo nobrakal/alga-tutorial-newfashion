@@ -21,6 +21,7 @@ executable tutorial
                      , Eval
                      , Module.Zero
                      , Module.One
+                     , Module.Two
   build-depends:       base >=4.10 && <5
                      , algebraic-graphs >=0.1.1.1 && <0.1.2
                      , hint >= 0.8.0 && <  0.9
