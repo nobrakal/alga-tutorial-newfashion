@@ -34,6 +34,8 @@ help = T.unlines
   , "Type \"quit\" to quit"
   , "Type \"clue\" to have a clue on the current goal"
   , "Type \"skip\" to show the solution and skip"
+  , "Type \"module i\" to go to the module n° i"
+  , "Type \"submodule i\" to go to the submodule n° i"
   ]
 
 main :: IO ()
@@ -50,7 +52,7 @@ main = do
 runModules :: [Module] -> IO ()
 runModules arr = forM_ arr $ \m@Module{..}-> do
   let (Just pos) = elemIndex m arr
-  doInItalic $ putStr $ "Module "++ show pos ++ "/" ++ show (length arr) ++ ": "
+  doInItalic $ putStr $ "Module "++ show pos ++ "/" ++ show (length arr - 1) ++ ": "
   T.putStrLn desc
   breakLine
   runSubModules subs
@@ -58,21 +60,29 @@ runModules arr = forM_ arr $ \m@Module{..}-> do
 runSubModules :: [SubModule] -> IO ()
 runSubModules arr = forM_ arr $ \s@SubModule{..} -> do
   let (Just pos) = elemIndex s arr
-  doInItalic $ putStr $ "SubModule "++ show pos ++ "/" ++ show (length arr) ++ ": "
+  doInItalic $ putStr $ "SubModule "++ show pos ++ "/" ++ show (length arr - 1) ++ ": "
   T.putStrLn abstract
   breakLine
   T.putStrLn instruction
   breakLine
-  runSubModule clue fullAnswer conclusion
+  runSubModule arr clue fullAnswer conclusion
   breakLine
 
-runSubModule :: T.Text -> Answer -> T.Text -> IO ()
-runSubModule clue ans conclusion = do
+runSubModule :: [SubModule] -> T.Text -> Answer -> T.Text -> IO ()
+runSubModule arr clue ans conclusion = do
   res <- runInputT defaultSettings $ runQuestion clue ans conclusion
   case res of
-    Left i ->
-      case i of
-         Skip -> T.putStrLn conclusion
+    Left instr ->
+      case instr of
+        Skip -> T.putStrLn conclusion
+        GoToModule i ->
+          if i >= 0 && i < length modules
+             then runModules $ drop i modules
+             else defaultR
+        GoToSubModule i ->
+          if i >= 0 && i < length arr
+             then runSubModules $ drop i arr
+             else defaultR
     Right res' ->
       if res'
          then do
@@ -81,25 +91,29 @@ runSubModule clue ans conclusion = do
          else do
            doInColor Red $ putStrLn "Wrong answer"
            breakLine
-           runSubModule clue ans conclusion
+           defaultR
+  where
+    defaultR = runSubModule arr clue ans conclusion
 
 runQuestion :: T.Text -> Answer -> T.Text -> InputT IO (Either Instruction Bool)
 runQuestion clue ans@Answer{..} conclusion = do
   answerUser <- runInputT defaultSettings $ fromMaybe (error "Nothing as input") <$> getInputLine "λ: "
-  case answerUser of
-    "help" -> liftIO (T.putStrLn help) >> runQuestion clue ans conclusion
-    "quit" -> liftIO $ die "Bye"
-    "clue" -> do
+  case words answerUser of
+    ("help":_) -> liftIO (T.putStrLn help) >> runQuestion clue ans conclusion
+    ("quit":_) -> liftIO $ die "Bye"
+    ("clue":_) -> do
       liftIO $ do
         doInColor Blue $ putStr "Clue: "
         T.putStrLn clue
       runQuestion clue ans conclusion
-    "skip" -> liftIO $ do
+    ("skip":_) -> liftIO $ do
       doInColor Blue $ putStr "Skipping: "
       putStr "The solution was: \""
       T.putStr answer
       putStrLn "\""
       return $ Left Skip
+    ("module":xs:_) -> return $ Left $ GoToModule $ read xs
+    ("submodule":xs:_) -> return $ Left $ GoToSubModule $ read xs
     _ -> do
       res <- liftIO $ evalIt $ T.unpack verify ++ " (" ++ answerUser ++ ") (" ++ T.unpack answer ++ " :: " ++ T.unpack typeOf ++ " )"
       case res of
