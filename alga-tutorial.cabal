@@ -42,4 +42,5 @@ Test-Suite test
                      , algebraic-graphs >=0.1.1.1 && <0.1.2
                      , hint >= 0.8.0 && <  0.9
                      , text >= 1.2.3.0 && <1.3
+  default-language:    Haskell2010
 

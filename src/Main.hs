@@ -17,12 +17,13 @@ import System.Console.Haskeline
 import System.Console.ANSI
 
 import Module.Zero
+import Module.One
 
 import Eval
 import Types
 
 modules :: [Module]
-modules = [mod0]
+modules = [mod0, mod1]
 
 help :: T.Text
 help = T.unlines
@@ -53,21 +54,19 @@ runModules arr = forM_ arr $ \m@(Module name desc subs) -> do
   runSubModules subs
 
 runSubModules :: [SubModule] -> IO ()
-runSubModules arr = forM_ arr $ \s@(SubModule abstract instruction clue answer verify conclusion) -> do
+runSubModules arr = forM_ arr $ \s@(SubModule abstract instruction clue answer conclusion) -> do
   let (Just pos) = elemIndex s arr
   doInItalic $ putStr $ "SubModule "++ show pos ++ "/" ++ show (length arr) ++ ": "
   T.putStrLn abstract
   breakLine
   T.putStrLn instruction
   breakLine
-  runInputT defaultSettings' $ runSubModule clue answer verify conclusion
+  runInputT defaultSettings $ runSubModule clue answer conclusion
   breakLine
-  where
-    defaultSettings' = defaultSettings {historyFile = Just ".history"}
 
-runSubModule :: T.Text -> T.Text -> T.Text -> T.Text -> InputT IO ()
-runSubModule clue answer verify conclusion = do
-  res <- runQuestion clue answer verify conclusion
+runSubModule :: T.Text -> Answer -> T.Text -> InputT IO ()
+runSubModule clue answer conclusion = do
+  res <- runQuestion clue answer conclusion
   case res of
     Nothing -> liftIO $ T.putStrLn conclusion
     Just res' ->
@@ -79,19 +78,19 @@ runSubModule clue answer verify conclusion = do
            liftIO $ do
              doInColor Red $ putStrLn "Wrong answer"
              breakLine
-           runSubModule clue answer verify conclusion
+           runSubModule clue answer conclusion
 
-runQuestion :: T.Text -> T.Text -> T.Text -> T.Text -> InputT IO (Maybe Bool)
-runQuestion clue answer verify conclusion = do
+runQuestion :: T.Text -> Answer -> T.Text -> InputT IO (Maybe Bool)
+runQuestion clue ans@(Answer answer typeOf verify) conclusion = do
   answerUser <- runInputT defaultSettings $ fromMaybe (error "Nothing as input") <$> getInputLine "λ: "
   case answerUser of
-    "help" -> liftIO (T.putStrLn help) >> runQuestion clue answer verify conclusion
+    "help" -> liftIO (T.putStrLn help) >> runQuestion clue ans conclusion
     "quit" -> liftIO $ die "Bye"
     "clue" -> do
       liftIO $ do
         doInColor Blue $ putStr "Clue: "
         T.putStrLn clue
-      runQuestion clue answer verify conclusion
+      runQuestion clue ans conclusion
     "skip" -> liftIO $ do
       doInColor Blue $ putStr "Skipping: "
       putStr "The solution was: \""
@@ -99,7 +98,7 @@ runQuestion clue answer verify conclusion = do
       putStrLn "\""
       return Nothing
     au -> do
-      res <- liftIO $ evalIt $ T.unpack verify ++ " (" ++ answerUser ++ ") (" ++ T.unpack answer ++ " :: Graph Int )"
+      res <- liftIO $ evalIt $ T.unpack verify ++ " (" ++ answerUser ++ ") (" ++ T.unpack answer ++ " :: " ++ T.unpack typeOf ++ " )"
       case res of
         Right val -> return $ Just val
         Left e -> do
