@@ -5,7 +5,7 @@ module Main (main) where
 
 import Data.Foldable (forM_)
 import Data.Maybe (fromMaybe)
-import Data.List (elemIndex)
+import Data.List (elemIndex, mapAccumL)
 import System.Exit
 import Data.Monoid ((<>))
 import Control.Monad (when, forever)
@@ -36,7 +36,7 @@ help mn = T.unlines $
   [ "Help:\n"
   , " Type \"help\" to show this message"
   , " Type \"quit\" to quit"
-  , " Type \"module i\" to go to the module n° i. Modules available: " <> T.pack (show [0..(length modules - 1)])
+  , " Type \"module i\" to go to the module n° i. Modules available: \n  " <> T.intercalate "\n  " (snd (mapAccumL (\k v  -> (k+1, T.pack (show k ++ ". ") <> name v) ) (0 :: Int) modules))
   ] ++ maybe [] (\n ->
     [ " Type \"clue\" to have a clue on the current goal"
     , " Type \"skip\" to show the solution and skip"
