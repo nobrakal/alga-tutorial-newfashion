@@ -61,6 +61,6 @@ s04 = SubModule
   , instruction = "For example, try to find a condensed representation the graph composed by the following edges: (0,1), (0,2), (1,2)"
   , clue = "Use Connect wisely, you don't need to overlay anything"
   , fullAnswer = Answer "Connect (Vertex 0) (Connect (Vertex 1) (Vertex 2))" "Graph Int" "(===)"
-  , conclusion = "You know the alga's basics :)"
+  , conclusion = "You know alga's basics :)"
   }
 

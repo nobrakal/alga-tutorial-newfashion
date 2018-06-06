@@ -23,7 +23,7 @@ import Module.One
 import Eval
 import Types
 
-data Instruction = GoToModule Int | GoToSubModule Int | Skip | Help
+data Instruction = GoToModule Int | GoToSubModule Int | Skip | Help | Clue
 
 modules :: [Module]
 modules = [mod0, mod1]
@@ -71,10 +71,14 @@ runSubModules arr i = forM_ (maybe id drop i arr) $ \s@SubModule{..} -> do
 
 runSubModule :: [SubModule] -> T.Text -> Answer -> T.Text -> IO ()
 runSubModule arr clue ans conclusion = do
-  res <- runInputT defaultSettings $ runQuestion clue ans conclusion
+  res <- runInputT defaultSettings $ runQuestion ans
   case res of
     Left instr ->
       case instr of
+        Clue -> do
+          doInColor Blue $ putStr "Clue: "
+          T.putStrLn clue
+          defaultR
         Help -> do
           T.putStrLn $ help $ length arr - 1
           defaultR
@@ -99,17 +103,13 @@ runSubModule arr clue ans conclusion = do
   where
     defaultR = runSubModule arr clue ans conclusion
 
-runQuestion :: T.Text -> Answer -> T.Text -> InputT IO (Either Instruction Bool)
-runQuestion clue ans@Answer{..} conclusion = do
+runQuestion :: Answer -> InputT IO (Either Instruction Bool)
+runQuestion Answer{..} = do
   answerUser <- runInputT defaultSettings $ fromMaybe (error "Nothing as input") <$> getInputLine "λ: "
   case words answerUser of
     ("help":_) -> return $ Left Help
     ("quit":_) -> liftIO $ die "Bye"
-    ("clue":_) -> do
-      liftIO $ do
-        doInColor Blue $ putStr "Clue: "
-        T.putStrLn clue
-      runQuestion clue ans conclusion
+    ("clue":_) -> return $ Left Clue
     ("skip":_) -> liftIO $ do
       doInColor Blue $ putStr "Skipping: "
       putStr "The solution was: \""
