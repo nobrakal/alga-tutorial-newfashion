@@ -8,6 +8,7 @@ import Data.Maybe (fromMaybe)
 import Data.List (elemIndex)
 import System.Exit
 import Control.Monad.IO.Class
+import Data.Monoid ((<>))
 
 import qualified Data.Text as T
 import qualified Data.Text.IO as T
@@ -22,20 +23,20 @@ import Module.One
 import Eval
 import Types
 
-data Instruction = GoToModule Int | GoToSubModule Int | Skip
+data Instruction = GoToModule Int | GoToSubModule Int | Skip | Help
 
 modules :: [Module]
 modules = [mod0, mod1]
 
-help :: T.Text
-help = T.unlines
-  [ "Help: "
-  , "Type \"help\" to show this message"
-  , "Type \"quit\" to quit"
-  , "Type \"clue\" to have a clue on the current goal"
-  , "Type \"skip\" to show the solution and skip"
-  , "Type \"module i\" to go to the module n° i"
-  , "Type \"submodule i\" to go to the submodule n° i"
+help :: Int -> T.Text
+help n = T.unlines
+  [ "Help:\n"
+  , " Type \"help\" to show this message"
+  , " Type \"quit\" to quit"
+  , " Type \"clue\" to have a clue on the current goal"
+  , " Type \"skip\" to show the solution and skip"
+  , " Type \"module i\" to go to the module n° i. Modules available: " <> T.pack (show [0..(length modules - 1)])
+  , " Type \"submodule i\" to go to the submodule n° i. Submodules available: " <> T.pack (show [0..n])
   ]
 
 main :: IO ()
@@ -47,18 +48,18 @@ main = do
   breakLine
   doInItalic $ putStrLn "Type \"help\" to get help"
   breakLine
-  runModules modules
+  runModules Nothing
 
-runModules :: [Module] -> IO ()
-runModules arr = forM_ arr $ \m@Module{..}-> do
-  let (Just pos) = elemIndex m arr
-  doInItalic $ putStr $ "Module "++ show pos ++ "/" ++ show (length arr - 1) ++ ": "
+runModules :: Maybe Int -> IO ()
+runModules i = forM_ (maybe id drop i modules) $ \m@Module{..}-> do
+  let (Just pos) = elemIndex m modules
+  doInItalic $ putStr $ "Module "++ show pos ++ "/" ++ show (length modules - 1) ++ ": "
   T.putStrLn desc
   breakLine
-  runSubModules subs
+  runSubModules subs Nothing
 
-runSubModules :: [SubModule] -> IO ()
-runSubModules arr = forM_ arr $ \s@SubModule{..} -> do
+runSubModules :: [SubModule] -> Maybe Int -> IO ()
+runSubModules arr i = forM_ (maybe id drop i arr) $ \s@SubModule{..} -> do
   let (Just pos) = elemIndex s arr
   doInItalic $ putStr $ "SubModule "++ show pos ++ "/" ++ show (length arr - 1) ++ ": "
   T.putStrLn abstract
@@ -74,14 +75,17 @@ runSubModule arr clue ans conclusion = do
   case res of
     Left instr ->
       case instr of
+        Help -> do
+          T.putStrLn $ help $ length arr - 1
+          defaultR
         Skip -> T.putStrLn conclusion
         GoToModule i ->
           if i >= 0 && i < length modules
-             then runModules $ drop i modules
+             then runModules $ Just i
              else defaultR
         GoToSubModule i ->
           if i >= 0 && i < length arr
-             then runSubModules $ drop i arr
+             then runSubModules arr $ Just i
              else defaultR
     Right res' ->
       if res'
@@ -99,7 +103,7 @@ runQuestion :: T.Text -> Answer -> T.Text -> InputT IO (Either Instruction Bool)
 runQuestion clue ans@Answer{..} conclusion = do
   answerUser <- runInputT defaultSettings $ fromMaybe (error "Nothing as input") <$> getInputLine "λ: "
   case words answerUser of
-    ("help":_) -> liftIO (T.putStrLn help) >> runQuestion clue ans conclusion
+    ("help":_) -> return $ Left Help
     ("quit":_) -> liftIO $ die "Bye"
     ("clue":_) -> do
       liftIO $ do
