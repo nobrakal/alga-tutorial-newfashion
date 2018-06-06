@@ -20,4 +20,5 @@ main = forM_ (subs mod0 ++ subs mod1) $ \submod -> do
   res <- evalIt $ T.unpack verify ++ case typeOf of
     GraphInt -> " (" ++ T.unpack ans ++ ") (" ++ T.unpack ans ++ " :: Graph Int )"
     Str -> " \"" ++ T.unpack ans ++ "\" \"" ++ T.unpack ans ++ "\""
+    Comparison -> show (T.length ans) ++ " " ++ show (T.length ans) ++ " && (==)" ++ " (" ++ ans ++ ") (" ++ T.unpack ans ++" :: Graph Int )"
   either (\e -> die $ "Non Coherent\n" ++ show submod ++ show e) (const $ return ()) res

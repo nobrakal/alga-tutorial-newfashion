@@ -27,7 +27,10 @@ data Answer = Answer {
   verify :: T.Text -- A function to verify the input (likely "==")
 } deriving (Show)
 
-data TypeOf = GraphInt | Str deriving (Show)
+data TypeOf = GraphInt
+            | Str
+            | Comparison
+            deriving (Show)
 
 instance Eq SubModule where
   (==) = on (==) abstract

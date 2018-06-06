@@ -57,6 +57,7 @@ runModules i = forM_ (maybe id drop i modules) $ \m@Module{..}-> do
   T.putStrLn desc
   breakLine
   runSubModules subs Nothing
+  die "Bye, thank you for doing this tutorial"
 
 runSubModules :: [SubModule] -> Maybe Int -> IO ()
 runSubModules arr i = forM_ (maybe id drop i arr) $ \s@SubModule{..} -> do
@@ -119,9 +120,10 @@ runQuestion Answer{..} = do
     ("module":xs:_) -> return $ Left $ GoToModule $ read xs
     ("submodule":xs:_) -> return $ Left $ GoToSubModule $ read xs
     _ -> do
-      res <- liftIO $ evalIt $ T.unpack verify ++ case typeOf of
-        GraphInt -> " (" ++ answerUser ++ ") (" ++ T.unpack answer ++ " :: Graph Int )"
-        Str -> " \"" ++ answerUser ++ "\" \"" ++ T.unpack answer ++ "\""
+      res <- liftIO $ evalIt $ case typeOf of
+        GraphInt -> T.unpack verify ++ " (" ++ answerUser ++ ") (" ++ T.unpack answer ++" :: Graph Int )"
+        Str -> T.unpack verify ++ " \"" ++ answerUser ++ "\" \"" ++ T.unpack answer ++ "\""
+        Comparison -> T.unpack verify ++ show (length answerUser) ++ " " ++ show (T.length answer) ++ " && (==)" ++ " (" ++ answerUser ++ ") (" ++ T.unpack answer ++" :: Graph Int )"
       case res of
         Right val -> return $ Right val
         Left e -> do
