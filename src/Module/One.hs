@@ -25,7 +25,7 @@ s10 = SubModule
     ]
   , instruction = "Try to connect 'Vertex 0' and 'Vertex 1' with this syntax"
   , clue = "TODO"
-  , fullAnswer = Answer "Connect 0 1" "Graph Int" "(==)"
+  , fullAnswer = Answer "Connect 0 1" Str "(==)"
   , conclusion = "TODO"
   }
 
@@ -39,7 +39,7 @@ s11 = SubModule
     ]
   , instruction = "Try to connect 'Vertex 0' and 'Vertex 1' with this syntax, and with what we have seen before"
   , clue = "TODO"
-  , fullAnswer = Answer "0 * 1" "Graph Int" "(==)"
+  , fullAnswer = Answer "0 * 1" Str "(==)"
   , conclusion = "TODO"
   }
 

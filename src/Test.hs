@@ -17,5 +17,7 @@ import qualified Data.Text as T
 main :: IO ()
 main = forM_ (subs mod0 ++ subs mod1) $ \submod -> do
   let (Answer ans typeOf verify) = fullAnswer submod
-  res <- evalIt $ T.unpack verify ++ " (" ++ T.unpack ans ++ ") (" ++ T.unpack ans ++ " :: " ++ T.unpack typeOf ++" )"
+  res <- evalIt $ T.unpack verify ++ case typeOf of
+    GraphInt -> " (" ++ T.unpack ans ++ ") (" ++ T.unpack ans ++ " :: Graph Int )"
+    Str -> " \"" ++ T.unpack ans ++ "\" \"" ++ T.unpack ans ++ "\""
   either (\e -> die $ "Non Coherent\n" ++ show submod ++ show e) (const $ return ()) res

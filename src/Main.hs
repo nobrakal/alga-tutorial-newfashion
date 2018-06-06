@@ -119,7 +119,9 @@ runQuestion Answer{..} = do
     ("module":xs:_) -> return $ Left $ GoToModule $ read xs
     ("submodule":xs:_) -> return $ Left $ GoToSubModule $ read xs
     _ -> do
-      res <- liftIO $ evalIt $ T.unpack verify ++ " (" ++ answerUser ++ ") (" ++ T.unpack answer ++ " :: " ++ T.unpack typeOf ++ " )"
+      res <- liftIO $ evalIt $ T.unpack verify ++ case typeOf of
+        GraphInt -> " (" ++ answerUser ++ ") (" ++ T.unpack answer ++ " :: Graph Int )"
+        Str -> " \"" ++ answerUser ++ "\" \"" ++ T.unpack answer ++ "\""
       case res of
         Right val -> return $ Right val
         Left e -> do

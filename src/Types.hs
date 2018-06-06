@@ -23,9 +23,11 @@ data SubModule = SubModule {
 
 data Answer = Answer {
   answer :: T.Text,
-  typeOf :: T.Text,
+  typeOf :: TypeOf,
   verify :: T.Text -- A function to verify the input (likely "==")
 } deriving (Show)
+
+data TypeOf = GraphInt | Str deriving (Show)
 
 instance Eq SubModule where
   (==) = on (==) abstract
