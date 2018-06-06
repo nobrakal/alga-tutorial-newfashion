@@ -25,6 +25,6 @@ s0 = SubModule
     ]
   , instruction = "Find a simpler and equivalent graph of: \"1 + 2 + 2 + 1 * 4\""
   , clue = "TODO"
-  , fullAnswer = Answer "1 + 2 + 3 * 4" Comparison "(<=)"
+  , fullAnswer = Answer "1 + 2 * 4" Comparison "(<=)"
   , conclusion = "TODO"
   }
