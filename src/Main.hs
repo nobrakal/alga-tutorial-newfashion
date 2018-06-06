@@ -60,7 +60,7 @@ runModules i = forM_ (maybe id drop i modules) $ \m@Module{..}-> do
   doInItalic $ putStr $ "Module "++ show pos ++ "/" ++ show (length modules - 1) ++ ": "
   T.putStrLn desc
   breakLine
-  runSubModules subs Nothing
+  runSubModules pos subs Nothing
   putStrLn "You have finished the modules, what do you want to do next ?"
   forever $ do
     answerUser <- getUserInput
@@ -73,19 +73,22 @@ runModules i = forM_ (maybe id drop i modules) $ \m@Module{..}-> do
       Right{} -> doInColor Red $ putStrLn "It is not an action, type \"help\" for help"
 
 
-runSubModules :: [SubModule] -> Maybe Int -> IO ()
-runSubModules arr i = forM_ (maybe id drop i arr) $ \s@SubModule{..} -> do
-  let (Just pos) = elemIndex s arr
-  doInItalic $ putStr $ "SubModule "++ show pos ++ "/" ++ show (length arr - 1) ++ ": "
+runSubModules :: Int -- ^ The curent position in the module list
+              -> [SubModule] -- ^ The list of submodules
+              -> Maybe Int -- ^ Maybe somewhere to start in the submodule list
+              -> IO ()
+runSubModules pos arr i = forM_ (maybe id drop i arr) $ \s@SubModule{..} -> do
+  let (Just pos') = elemIndex s arr
+  doInItalic $ putStr $ "SubModule "++ show pos' ++ "/" ++ show (length arr - 1) ++ ": "
   T.putStrLn abstract
   breakLine
   T.putStrLn instruction
   breakLine
-  runSubModule arr clue fullAnswer conclusion
+  runSubModule pos arr clue fullAnswer conclusion
   breakLine
 
-runSubModule :: [SubModule] -> T.Text -> Answer -> T.Text -> IO ()
-runSubModule arr clue ans conclusion = do
+runSubModule :: Int -> [SubModule] -> T.Text -> Answer -> T.Text -> IO ()
+runSubModule pos arr clue ans conclusion = do
   res <- runQuestion ans
   case res of
     Left instr ->
@@ -104,7 +107,7 @@ runSubModule arr clue ans conclusion = do
              else defaultR
         GoToSubModule i ->
           if i >= 0 && i < length arr
-             then runSubModules arr $ Just i
+             then runSubModules pos arr (Just i) >> runModules (Just (pos + 1))
              else defaultR
     Right res' ->
       if res'
@@ -116,7 +119,7 @@ runSubModule arr clue ans conclusion = do
            breakLine
            defaultR
   where
-    defaultR = runSubModule arr clue ans conclusion
+    defaultR = runSubModule pos arr clue ans conclusion
 
 runQuestion :: Answer -> IO (Either Instruction Bool)
 runQuestion ans = do
