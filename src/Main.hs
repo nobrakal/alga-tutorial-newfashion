@@ -7,8 +7,9 @@ import Data.Foldable (forM_)
 import Data.Maybe (fromMaybe)
 import Data.List (elemIndex)
 import System.Exit
-import Control.Monad.IO.Class
 import Data.Monoid ((<>))
+import Control.Monad (when, forever)
+import Data.Bifunctor (second)
 
 import qualified Data.Text as T
 import qualified Data.Text.IO as T
@@ -30,16 +31,17 @@ data Instruction = GoToModule Int | GoToSubModule Int | Skip | Help | Clue
 modules :: [Module]
 modules = [mod0, mod1, mod2, mod3]
 
-help :: Int -> T.Text
-help n = T.unlines
+help :: Maybe Int -> T.Text
+help mn = T.unlines $
   [ "Help:\n"
   , " Type \"help\" to show this message"
   , " Type \"quit\" to quit"
-  , " Type \"clue\" to have a clue on the current goal"
-  , " Type \"skip\" to show the solution and skip"
   , " Type \"module i\" to go to the module n° i. Modules available: " <> T.pack (show [0..(length modules - 1)])
-  , " Type \"submodule i\" to go to the submodule n° i. Submodules available: " <> T.pack (show [0..n])
-  ]
+  ] ++ maybe [] (\n ->
+    [ " Type \"clue\" to have a clue on the current goal"
+    , " Type \"skip\" to show the solution and skip"
+    , " Type \"submodule i\" to go to the submodule n° i. Submodules available: " <> T.pack (show [0..n])
+    ]) mn
 
 main :: IO ()
 main = do
@@ -59,7 +61,17 @@ runModules i = forM_ (maybe id drop i modules) $ \m@Module{..}-> do
   T.putStrLn desc
   breakLine
   runSubModules subs Nothing
-  die "Bye, thank you for doing this tutorial"
+  putStrLn "You have finished the modules, what do you want to do next ?"
+  forever $ do
+    answerUser <- getUserInput
+    au <- handleCommand Nothing answerUser
+    case au of
+      Left com -> case com of
+        Help -> T.putStrLn $ help Nothing
+        GoToModule j -> when (j >= 0 && j < length modules) $ runModules $ Just j
+        _ -> doInColor Red $ putStrLn "Impossible action"
+      Right{} -> doInColor Red $ putStrLn "It is not an action, type \"help\" for help"
+
 
 runSubModules :: [SubModule] -> Maybe Int -> IO ()
 runSubModules arr i = forM_ (maybe id drop i arr) $ \s@SubModule{..} -> do
@@ -74,7 +86,7 @@ runSubModules arr i = forM_ (maybe id drop i arr) $ \s@SubModule{..} -> do
 
 runSubModule :: [SubModule] -> T.Text -> Answer -> T.Text -> IO ()
 runSubModule arr clue ans conclusion = do
-  res <- runInputT defaultSettings $ runQuestion ans
+  res <- runQuestion ans
   case res of
     Left instr ->
       case instr of
@@ -83,7 +95,7 @@ runSubModule arr clue ans conclusion = do
           T.putStrLn clue
           defaultR
         Help -> do
-          T.putStrLn $ help $ length arr - 1
+          T.putStrLn $ help $ Just $ length arr - 1
           defaultR
         Skip -> T.putStrLn conclusion
         GoToModule i ->
@@ -106,31 +118,45 @@ runSubModule arr clue ans conclusion = do
   where
     defaultR = runSubModule arr clue ans conclusion
 
-runQuestion :: Answer -> InputT IO (Either Instruction Bool)
-runQuestion Answer{..} = do
-  answerUser <- runInputT defaultSettings $ fromMaybe (error "Nothing as input") <$> getInputLine "λ: "
-  case words answerUser of
-    ("help":_) -> return $ Left Help
-    ("quit":_) -> liftIO $ die "Bye"
-    ("clue":_) -> return $ Left Clue
-    ("skip":_) -> liftIO $ do
-      doInColor Blue $ putStr "Skipping: "
-      putStr "The solution was: \""
-      T.putStr answer
-      putStrLn "\""
-      return $ Left Skip
-    ("module":xs:_) -> return $ Left $ GoToModule $ read xs
-    ("submodule":xs:_) -> return $ Left $ GoToSubModule $ read xs
-    _ -> do
-      res <- liftIO $ evalIt $ "let " ++ T.unpack (T.intercalate ";" decl) ++ " in " ++ T.unpack verify ++ case typeOf of
-        GraphInt -> " (" ++ answerUser ++ ") (" ++ T.unpack answer ++" :: Graph Int )"
-        Str -> " \"" ++ answerUser ++ "\" \"" ++ T.unpack answer ++ "\""
-        Comparison -> show (length answerUser) ++ " " ++ show (T.length answer) ++ " && (==)" ++ " (" ++ answerUser ++ ") (" ++ T.unpack answer ++" :: Graph Int )"
-      case res of
-        Right val -> return $ Right val
-        Left e -> do
-          liftIO $ doInColor Red $ T.putStrLn e
-          return $ Right False
+runQuestion :: Answer -> IO (Either Instruction Bool)
+runQuestion ans = do
+  answerUser <- getUserInput
+  handCom <- handleCommand (Just ans) answerUser
+  sequence $ second (verifyInput ans) handCom
+
+-- | Handle the command if there was one in the string. Either return the string intact
+handleCommand :: Maybe Answer -> String -> IO (Either Instruction String)
+handleCommand mans answerUser = case words answerUser of
+  ("help":_) -> return $ Left Help
+  ("quit":_) -> die "Bye"
+  ("clue":_) -> return $ Left Clue
+  ("skip":_) -> do
+    doInColor Blue $ putStr "Skipping: "
+    case mans of
+      Nothing -> return ()
+      Just Answer{..} -> do
+        putStr "The solution was: \""
+        T.putStr answer
+    putStrLn "\""
+    return $ Left Skip
+  ("module":xs:_) -> return $ Left $ GoToModule $ read xs
+  ("submodule":xs:_) -> return $ Left $ GoToSubModule $ read xs
+  _ -> return $ Right answerUser
+
+verifyInput :: Answer -> String -> IO Bool
+verifyInput Answer{..} answerUser = do
+  res <- evalIt $ "let " ++ T.unpack (T.intercalate ";" decl) ++ " in " ++ T.unpack verify ++ case typeOf of
+     GraphInt -> " (" ++ answerUser ++ ") (" ++ T.unpack answer ++" :: Graph Int )"
+     Str -> " \"" ++ answerUser ++ "\" \"" ++ T.unpack answer ++ "\""
+     Comparison -> show (length answerUser) ++ " " ++ show (T.length answer) ++ " && (==)" ++ " (" ++ answerUser ++ ") (" ++ T.unpack answer ++" :: Graph Int )"
+  case res of
+     Right val -> return val
+     Left e -> do
+       doInColor Red $ T.putStrLn e
+       return False
+
+getUserInput :: IO String
+getUserInput = runInputT defaultSettings $ fromMaybe (error "Nothing as input") <$> getInputLine "λ: "
 
 breakLine :: IO ()
 breakLine = putStr "\n"
