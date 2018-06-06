@@ -33,7 +33,7 @@ modules = [mod0, mod1, mod2, mod3]
 
 help :: Maybe Int -> T.Text
 help mn = T.unlines $
-  [ "Help:\n"
+  [ "__Help__ :\n"
   , " Type \"help\" to show this message"
   , " Type \"quit\" to quit"
   , " Type \"module i\" to go to the module n° i. Modules available: \n  " <> T.intercalate "\n  " (snd (mapAccumL (\k v  -> (k+1, T.pack (show k ++ ". ") <> name v) ) (0 :: Int) modules))
@@ -80,10 +80,10 @@ runSubModules :: Int -- ^ The curent position in the module list
 runSubModules pos arr i = forM_ (maybe id drop i arr) $ \s@SubModule{..} -> do
   let (Just pos') = elemIndex s arr
   doInItalic $ putStr $ "SubModule "++ show pos' ++ "/" ++ show (length arr - 1) ++ ": "
-  T.putStrLn abstract
-  breakLine
-  T.putStrLn instruction
-  breakLine
+  render abstract
+--  breakLine
+  render instruction
+--  breakLine
   runSubModule pos arr clue fullAnswer conclusion
   breakLine
 
@@ -95,12 +95,12 @@ runSubModule pos arr clue ans conclusion = do
       case instr of
         Clue -> do
           doInColor Blue $ putStr "Clue: "
-          T.putStrLn clue
+          render clue
           defaultR
         Help -> do
-          T.putStrLn $ help $ Just $ length arr - 1
+          render $ help $ Just $ length arr - 1
           defaultR
-        Skip -> T.putStrLn conclusion
+        Skip -> render conclusion
         GoToModule i ->
           if i >= 0 && i < length modules
              then runModules $ Just i
@@ -113,7 +113,7 @@ runSubModule pos arr clue ans conclusion = do
       if res'
          then do
            doInColor Green $ putStrLn "Great, you find the right response"
-           T.putStrLn conclusion
+           render conclusion
          else do
            doInColor Red $ putStrLn "Wrong answer"
            breakLine
@@ -146,6 +146,7 @@ handleCommand mans answerUser = case words answerUser of
   ("submodule":xs:_) -> return $ Left $ GoToSubModule $ read xs
   _ -> return $ Right answerUser
 
+-- | Verify the given input using a provided answer to test
 verifyInput :: Answer -> String -> IO Bool
 verifyInput Answer{..} answerUser = do
   res <- evalIt $ "let " ++ T.unpack (T.intercalate ";" decl) ++ " in " ++ T.unpack verify ++ case typeOf of
@@ -165,14 +166,30 @@ breakLine :: IO ()
 breakLine = putStr "\n"
 
 doInColor :: Color -> IO () -> IO ()
-doInColor color action = do
-  setSGR [SetColor Foreground Dull color]
-  action
-  setSGR [Reset]
+doInColor color = (>>) (setSGR [SetColor Foreground Dull color]) . actAndReset
 
 doInItalic :: IO () -> IO ()
-doInItalic action = do
-  setSGR [SetItalicized True]
-  action
-  setSGR [Reset]
+doInItalic = (>>) (setSGR [SetItalicized True]) . actAndReset
 
+doUnderlined :: IO () -> IO ()
+doUnderlined = (>>) (setSGR [SetUnderlining SingleUnderline]) . actAndReset
+
+-- | Render a Text, it output in italic words like _home_ and underline like __sweet__
+render :: T.Text -> IO ()
+render t = do
+  forM_ (T.lines t) $ \line -> do
+    forM_ (T.split (== ' ') line) $ \word -> do
+      render' word
+      putStr " "
+    breakLine
+  breakLine
+
+render' :: T.Text -> IO ()
+render' t
+  | T.length t < 2 = T.putStr t
+  | T.take 2 t == "__" && T.drop (T.length t - 2) t == "__" = doUnderlined $ T.putStr $ T.drop 2 $ T.take (T.length t - 2) t
+  | T.head t == '_' && T.last t == '_' = doInItalic $ T.putStr $ T.tail $ T.init t
+  | otherwise = T.putStr t
+
+actAndReset :: IO () -> IO ()
+actAndReset act = act >> setSGR [Reset]

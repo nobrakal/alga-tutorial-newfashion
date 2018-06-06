@@ -4,6 +4,8 @@ import qualified Data.Text as T
 
 import Data.Function (on)
 
+-- | Modules Text are rendered using @render@ from Main.hs
+
 data Module = Module {
   name :: T.Text,
   desc :: T.Text,
