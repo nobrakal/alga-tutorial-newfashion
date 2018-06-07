@@ -1,10 +1,13 @@
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE RecordWildCards #-}
 
-module Eval (evalIt) where
+module Eval (evalWithAns, evalIt) where
 
-import Language.Haskell.Interpreter
+import Language.Haskell.Interpreter hiding (typeOf)
 import qualified Data.Text as T
 import Data.Bifunctor (first)
+
+import Types
 
 evalIt :: String -> IO (Either T.Text Bool)
 evalIt e = fmap (first handleError) $ runInterpreter $ interpretIt e
@@ -19,3 +22,9 @@ interpretIt :: String -> InterpreterT IO Bool
 interpretIt e = do
   setImports ["Prelude","Algebra.Graph"]
   interpret e (as :: Bool)
+
+evalWithAns :: Answer -> String ->  IO (Either T.Text Bool)
+evalWithAns Answer{..} answerUser = evalIt $ "let " ++ T.unpack (T.intercalate ";" decl) ++ " in " ++ T.unpack verify ++ case typeOf of
+  GraphInt -> " (" ++ answerUser ++ ") (" ++ T.unpack answer ++" :: Graph Int )"
+  Str -> " \"" ++ answerUser ++ "\" \"" ++ T.unpack answer ++ "\""
+  Comparison -> show (length answerUser) ++ " " ++ show (T.length answer) ++ " && (==)" ++ " (" ++ answerUser ++ ") (" ++ T.unpack answer ++" :: Graph Int )"

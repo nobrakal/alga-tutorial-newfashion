@@ -148,16 +148,7 @@ handleCommand mans answerUser = case words answerUser of
 
 -- | Verify the given input using a provided answer to test
 verifyInput :: Answer -> String -> IO Bool
-verifyInput Answer{..} answerUser = do
-  res <- evalIt $ "let " ++ T.unpack (T.intercalate ";" decl) ++ " in " ++ T.unpack verify ++ case typeOf of
-     GraphInt -> " (" ++ answerUser ++ ") (" ++ T.unpack answer ++" :: Graph Int )"
-     Str -> " \"" ++ answerUser ++ "\" \"" ++ T.unpack answer ++ "\""
-     Comparison -> show (length answerUser) ++ " " ++ show (T.length answer) ++ " && (==)" ++ " (" ++ answerUser ++ ") (" ++ T.unpack answer ++" :: Graph Int )"
-  case res of
-     Right val -> return val
-     Left e -> do
-       doInColor Red $ T.putStrLn e
-       return False
+verifyInput ans answerUser = evalWithAns ans answerUser >>= either (\e -> doInColor Red (T.putStrLn e) >> return False) return
 
 getUserInput :: IO String
 getUserInput = runInputT defaultSettings $ fromMaybe (error "Nothing as input") <$> getInputLine "λ: "
