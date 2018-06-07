@@ -158,7 +158,9 @@ verifyInput ans answerUser = evalWithAns ans answerUser >>= either (\e -> printR
     removeAndPrint = doInColor Red . T.putStrLn . T.replace (answer ans) "ANSWER"
 
 getUserInput :: IO String
-getUserInput = runInputT defaultSettings $ fromMaybe (error "Nothing as input") <$> getInputLine "λ: "
+getUserInput = runInputT defaultSettings' $ fromMaybe (error "Nothing as input") <$> getInputLine "λ: "
+  where
+    defaultSettings' = defaultSettings {historyFile = Just ".history"}
 
 breakLine :: IO ()
 breakLine = putStr "\n"

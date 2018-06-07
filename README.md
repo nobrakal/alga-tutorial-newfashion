@@ -1,5 +1,8 @@
 # alga-tutorial
 
+## History
+History is kept in ".history"
+
 ## Use
 
 Please use this tutorial either
