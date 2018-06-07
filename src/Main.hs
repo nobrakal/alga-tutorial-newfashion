@@ -22,6 +22,7 @@ import Module.Zero
 import Module.One
 import Module.Two
 import Module.Three
+import Module.Four
 
 import Eval
 import Types
@@ -29,7 +30,7 @@ import Types
 data Instruction = GoToModule Int | GoToSubModule Int | Skip | Help | Clue
 
 modules :: [Module]
-modules = [mod0, mod1, mod2, mod3]
+modules = [mod0, mod1, mod2, mod3, mod4]
 
 help :: Maybe Int -> T.Text
 help mn = T.unlines $

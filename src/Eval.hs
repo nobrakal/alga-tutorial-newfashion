@@ -20,11 +20,12 @@ handleError (WontCompile lst) = "Wont Compile: \n" `T.append` T.unlines (map (\(
 
 interpretIt :: String -> InterpreterT IO Bool
 interpretIt e = do
-  setImports ["Prelude","Algebra.Graph"]
+  setImports ["Prelude","Data.Foldable", "Data.Traversable","Algebra.Graph"]
   interpret e (as :: Bool)
 
 evalWithAns :: Answer -> String ->  IO (Either T.Text Bool)
 evalWithAns Answer{..} answerUser = evalIt $ "let " ++ T.unpack (T.intercalate ";" decl) ++ " in " ++ T.unpack verify ++ case typeOf of
   GraphInt -> " (" ++ answerUser ++ ") (" ++ T.unpack answer ++" :: Graph Int )"
+  CanFind -> " (" ++ answerUser ++ " ) ( " ++ T.unpack answer ++" )"
   Str -> " \"" ++ answerUser ++ "\" \"" ++ T.unpack answer ++ "\""
   Comparison -> show (length answerUser) ++ " " ++ show (T.length answer) ++ " && (==)" ++ " (" ++ answerUser ++ ") (" ++ T.unpack answer ++" :: Graph Int )"

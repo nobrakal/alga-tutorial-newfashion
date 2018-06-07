@@ -24,6 +24,7 @@ executable tutorial
                      , Module.Two
                      , Module.Two
                      , Module.Three
+                     , Module.Four
   build-depends:       base >=4.10 && <5
                      , algebraic-graphs >=0.1.1.1 && <0.1.2
                      , hint >= 0.8.0 && <  0.9
@@ -43,6 +44,7 @@ Test-Suite test
                      , Module.One
                      , Module.Two
                      , Module.Three
+                     , Module.Four
   hs-source-dirs:      src
   build-depends:       base >=4.10 && <5
                      , algebraic-graphs >=0.1.1.1 && <0.1.2

@@ -32,6 +32,7 @@ data Answer = Answer {
 
 data TypeOf = GraphInt
             | Str
+            | CanFind
             | Comparison
             deriving (Show)
 
