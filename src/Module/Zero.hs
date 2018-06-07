@@ -39,7 +39,7 @@ s02  = SubModule
   , instruction = "How would you describe a graph that _Overlay_ a single vertex 0 and a single vertex 1 ?"
   , clue = "Maybe simply by writing the thing down"
   , fullAnswer = Answer "Overlay (Vertex 0) (Vertex 1)" GraphInt "(==)" []
-  , conclusion = "So Overlay is commutative: Overlay (Vertex 0) (Vertex 1) == Overlay (Vertex 1) (Vertex 0)... Is there other maths here ?"
+  , conclusion = "Note that _Overlay_ is _commutative_ : Overlay (Vertex 0) (Vertex 1) == Overlay (Vertex 1) (Vertex 0)... Is there other maths here ?"
   }
 
 s03 :: SubModule

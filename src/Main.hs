@@ -61,7 +61,7 @@ runModules i = do
     T.putStrLn desc
     breakLine
     runSubModules pos subs Nothing
-    putStrLn "You have finished the modules, what do you want to do next ?"
+  putStrLn "You have finished the modules, what do you want to do next ?"
   runMain
 
 runMain :: IO ()
