@@ -42,7 +42,7 @@ mod3 = Module
       { abstract = "Graph is also an instance of _Traversable_"
       , instruction = "You have a graph \"gr :: Graph (Maybe Int)\", and you want to \"strip out\" the \"Maybe\", obtaining \"gr :: Maybe (Graph a)\" set to \"Nothing\" if there was a \"Nothing\" vertices or \"Just gr\" if there was only \"Just\" vertices. Can you do that ? "
       , clue = "Striping-out things is often called \"sequence\""
-      , fullAnswer = Answer "sequence gr" GraphInt "(==)" ["gr = Connect (Just 1) (Just 2)"]
+      , fullAnswer = Answer "sequence gr" CanFind "(==)" ["gr = Connect (pure (Just 1)) (pure (Just 2)) :: Graph (Maybe Int)"]
       , conclusion = "This can be also used with the IO monad to get pretty cool results"
       }
     ,
