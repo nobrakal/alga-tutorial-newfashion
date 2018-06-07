@@ -50,25 +50,28 @@ main = do
   _ <- evalIt "True == False"
   putStrLn "Welcome in alga-tutorial, this will teach you the basis of algebraic-graphs"
   breakLine
-  doInItalic $ putStrLn "Type \"help\" to get help"
-  breakLine
-  runModules Nothing
+  render $ help Nothing
+  runMain
 
-runModules :: Maybe Int -> IO ()
-runModules i = forM_ (maybe id drop i modules) $ \m@Module{..}-> do
-  let (Just pos) = elemIndex m modules
-  doInItalic $ putStr $ "Module "++ show pos ++ "/" ++ show (length modules - 1) ++ ": "
-  T.putStrLn desc
-  breakLine
-  runSubModules pos subs Nothing
-  putStrLn "You have finished the modules, what do you want to do next ?"
-  forever $ do
+runModules :: Int -> IO ()
+runModules i = do
+  forM_ (drop i modules) $ \m@Module{..}-> do
+    let (Just pos) = elemIndex m modules
+    doInItalic $ putStr $ "Module "++ show pos ++ "/" ++ show (length modules - 1) ++ ": "
+    T.putStrLn desc
+    breakLine
+    runSubModules pos subs Nothing
+    putStrLn "You have finished the modules, what do you want to do next ?"
+  runMain
+
+runMain :: IO ()
+runMain = forever $ do
     answerUser <- getUserInput
     au <- handleCommand Nothing answerUser
     case au of
       Left com -> case com of
         Help -> render $ help Nothing
-        GoToModule j -> when (j >= 0 && j < length modules) $ runModules $ Just j
+        GoToModule j -> when (j >= 0 && j < length modules) $ runModules j
         _ -> doInColor Red $ putStrLn "Impossible action"
       Right{} -> doInColor Red $ putStrLn "It is not an action, type \"help\" for help"
 
@@ -101,16 +104,18 @@ runSubModule pos arr clue ans conclusion = do
         Skip -> render conclusion
         GoToModule i ->
           if i >= 0 && i < length modules
-             then runModules $ Just i
+             then runModules i
              else defaultR
         GoToSubModule i ->
           if i >= 0 && i < length arr
-             then runSubModules pos arr (Just i) >> runModules (Just (pos + 1))
+             then runSubModules pos arr (Just i) >> runModules (pos + 1)
              else defaultR
     Right res' ->
       if res'
          then do
            doInColor Green $ putStrLn "Great, you find the right response"
+           T.putStrLn $ "Your answer was an equivalent of: \"" <> answer ans <> "\""
+           breakLine
            render conclusion
          else do
            doInColor Red $ putStrLn "Wrong answer"
