@@ -20,7 +20,7 @@ s0 = SubModule
   { abstract = "Graph are a _Functor_ instance. This means that you can use fmap on graphs. It will apply a function on each vertex"
   , instruction = "You want add 1 to each vertex of a graph \"gr\". How will you do that using fmap ?"
   , clue = "TODO"
-  , fullAnswer = Answer "fmap (+1) gr" GraphInt "(==)" ["gr = 1 + 2 * 3 + 5 * 6"]
+  , fullAnswer = Answer "fmap (+ 1) gr" GraphInt "(==)" ["gr = 1 + 2 * 3 + 5 * 6"]
   , conclusion = "TODO"
   }
 

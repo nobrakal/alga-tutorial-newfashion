@@ -67,7 +67,7 @@ runModules i = forM_ (maybe id drop i modules) $ \m@Module{..}-> do
     au <- handleCommand Nothing answerUser
     case au of
       Left com -> case com of
-        Help -> T.putStrLn $ help Nothing
+        Help -> render $ help Nothing
         GoToModule j -> when (j >= 0 && j < length modules) $ runModules $ Just j
         _ -> doInColor Red $ putStrLn "Impossible action"
       Right{} -> doInColor Red $ putStrLn "It is not an action, type \"help\" for help"
@@ -81,9 +81,7 @@ runSubModules pos arr i = forM_ (maybe id drop i arr) $ \s@SubModule{..} -> do
   let (Just pos') = elemIndex s arr
   doInItalic $ putStr $ "SubModule "++ show pos' ++ "/" ++ show (length arr - 1) ++ ": "
   render abstract
---  breakLine
   render instruction
---  breakLine
   runSubModule pos arr clue fullAnswer conclusion
   breakLine
 
@@ -148,7 +146,10 @@ handleCommand mans answerUser = case words answerUser of
 
 -- | Verify the given input using a provided answer to test
 verifyInput :: Answer -> String -> IO Bool
-verifyInput ans answerUser = evalWithAns ans answerUser >>= either (\e -> doInColor Red (T.putStrLn e) >> return False) return
+verifyInput ans answerUser = evalWithAns ans answerUser >>= either (\e -> printRed e >> return False) return
+  where
+    printRed e = removeAndPrint $ foldr (\todo -> T.replace todo (T.takeWhile (/= '=') todo)) e (decl ans)
+    removeAndPrint = doInColor Red . T.putStrLn . T.replace (answer ans) "ANSWER"
 
 getUserInput :: IO String
 getUserInput = runInputT defaultSettings $ fromMaybe (error "Nothing as input") <$> getInputLine "λ: "
@@ -166,6 +167,7 @@ doUnderlined :: IO () -> IO ()
 doUnderlined = (>>) (setSGR [SetUnderlining SingleUnderline]) . actAndReset
 
 -- | Render a Text, it output in italic words like _home_ and underline like __sweet__
+-- BreakLine at the end
 render :: T.Text -> IO ()
 render t = do
   forM_ (T.lines t) $ \line -> do
