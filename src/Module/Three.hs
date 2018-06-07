@@ -31,8 +31,16 @@ mod3 = Module
       }
     ,
     SubModule
+      { abstract = "Graph is also an instance of _Foldable_"
+      , instruction = "How can you tell if a vertex is in the graph or not ? Write the function name only"
+      , clue = "List are also an instance of _Foldable_ the name should be the same..."
+      , fullAnswer = Answer "elem" Str "(==)" []
+      , conclusion = "Great you have found the implementation of _hasVertex_"
+      }
+    ,
+    SubModule
       { abstract = T.intercalate "\n"
-        ["Graph is foldable, and provide a cool functions called _foldg_ :"
+        ["The fold from _Foldable_ is cool, but alga provide a cooler functions called _foldg_ :"
         , "Here is the impementation:\n"
         , "  foldg :: a -> (v -> a) -> (a -> a -> a) -> (a -> a -> a) -> Graph v -> a"
         , "  foldg e v o c gr = go gr"
@@ -69,7 +77,7 @@ mod3 = Module
       , instruction = "You are wanting to add a level to a graph \"gr\", that is replacing all his vertices by an overlay of two vertices _of_ _the_ _same_ _label_ than the previous vertex. How can you do that using the bind (>>=) operator ?"
       , clue = "Write first the function that produce a graph with two vertices of the same label given as input"
       , fullAnswer = Answer "gr >>= (\\x -> x + x)" GraphInt "(==)" ["gr = 1 + 2 * 3 + 5 * 6"]
-      , conclusion = "Powerfull monads..."
+      , conclusion = "Powerful monads..."
       }
     ]
   }
