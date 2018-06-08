@@ -24,9 +24,9 @@ s0 = SubModule
     ,"So in a context of a Graph: 1 == Vertex 1"
     ]
   , instruction = "Try to connect 'Vertex 0' and 'Vertex 1' with this syntax"
-  , clue = "TODO"
+  , clue = "So like you can certainly drop the \"Vertex\" constructor"
   , fullAnswer = Answer "Connect 0 1" Comparison "(<=)" []
-  , conclusion = "TODO"
+  , conclusion = "Is there other simplifications ?"
   }
 
 s1 :: SubModule
@@ -38,9 +38,9 @@ s1 = SubModule
     ,">>> (*) = Connect"
     ]
   , instruction = "Try to connect 'Vertex 0' and 'Vertex 1' with this syntax, and with what we have seen before"
-  , clue = "TODO"
+  , clue = "Connect = (+)"
   , fullAnswer = Answer "0 * 1" Comparison "(<=)" []
-  , conclusion = "TODO"
+  , conclusion = "Note that (+) is commutative but not (*)"
   }
 
 s2 :: SubModule
@@ -50,9 +50,9 @@ s2 = SubModule
       ,">>> n + 1 == 1"
       ]
   , instruction = "What can be this neutral element ?"
-  , clue = "TODO"
+  , clue = "Try to find a synonym to \"zero\" in graph theory"
   , fullAnswer = Answer "Empty" GraphInt "(==)" []
-  , conclusion = "TODO"
+  , conclusion = "Let's continue"
   }
 
 s3 :: SubModule
@@ -62,7 +62,7 @@ s3 = SubModule
       ,">>> n * 1 = 1"
       ]
   , instruction = "What can be this neutral element ?"
-  , clue = "TODO"
+  , clue = "What neutral element have you already seen ?"
   , fullAnswer = Answer "Empty" GraphInt "(==)" []
-  , conclusion = "TODO"
+  , conclusion = "You are certainly a mathematician"
   }
