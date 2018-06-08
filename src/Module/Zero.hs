@@ -44,7 +44,7 @@ s02  = SubModule
 
 s03 :: SubModule
 s03  = SubModule
-  { abstract = "Now you are wanting to connect them by an edge. Algebraic graph represents __directed graphs__ , so an edge from 0 to 1 is not the same than an edge from 1 to 0"
+  { abstract = "Now you are wanting to connect them by an edge. Algebraic graph represents __directed__ __graphs__ , so an edge from 0 to 1 is not the same than an edge from 1 to 0"
   , instruction = "How would you describe a graph that _Connect_ a single vertex 0 to a single vertex 1 ?"
   , clue = "Maybe simply by writing the thing down"
   , fullAnswer = Answer "Connect (Vertex 0) (Vertex 1)" GraphInt "(==)" []

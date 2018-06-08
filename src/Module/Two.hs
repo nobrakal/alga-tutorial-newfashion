@@ -30,7 +30,7 @@ mod2 = Module
     ,
     SubModule
       {abstract = T.intercalate "\n"
-        ["Overlay is also _idempotent_: \n"
+        ["Overlay is also _idempotent_ : \n"
         ,">>> 1 + 1 == 1\n"
         ,"Overlaying a graph with itself is the same graph"
         ]
