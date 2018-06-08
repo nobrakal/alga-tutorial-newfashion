@@ -20,7 +20,13 @@ handleError (WontCompile lst) = "Wont Compile: \n" `T.append` T.unlines (map (\(
 
 interpretIt :: String -> InterpreterT IO Bool
 interpretIt e = do
-  setImports ["Prelude","Data.Foldable", "Data.Traversable","Algebra.Graph"]
+  setImportsF
+    [ ModuleImport "Prelude" NotQualified (HidingList ["IO"])
+    , ModuleImport "PureIO" NotQualified NoImportList
+    , ModuleImport "Data.Foldable" NotQualified NoImportList
+    , ModuleImport "Data.Traversable" NotQualified NoImportList
+    , ModuleImport "Algebra.Graph" NotQualified NoImportList
+    ]
   interpret e (as :: Bool)
 
 evalWithAns :: Answer -> String ->  IO (Either T.Text Bool)
