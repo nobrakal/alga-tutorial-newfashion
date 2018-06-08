@@ -57,7 +57,7 @@ s03  = SubModule
 
 s04 :: SubModule
 s04 = SubModule
-  { abstract = "Is that all ? Yes, almsot. As you noticed, you can _Overlay_ and _Connect_ any graph. Connecting two graphs correspond to add an edge between each vertex from the right side to the left one"
+  { abstract = "Is that all ? Yes, almsot. As you noticed, you can _Overlay_ and _Connect_ any graph. Connecting two graphs correspond to add an edge between each vertex from the left side to the right one"
   , instruction = "For example, try to find a condensed representation the graph composed by the following edges: (0,1), (0,2), (1,2)"
   , clue = "Use Connect wisely, you don't need to overlay anything"
   , fullAnswer = Answer "Connect (Vertex 0) (Connect (Vertex 1) (Vertex 2))" GraphInt "(===)" []
