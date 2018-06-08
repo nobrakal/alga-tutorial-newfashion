@@ -49,7 +49,7 @@ main = do
   -- Start the interpreter
   putStrLn "STARTING..."
   _ <- evalIt "True == False"
-  putStrLn "Welcome in alga-tutorial, this will teach you the basis of algebraic-graphs"
+  putStrLn "Welcome in alga-tutorial, this will teach you the basis of algebraic-graphs. To start the tutorial, type \"module 0\""
   breakLine
   render $ help Nothing
   runMain
