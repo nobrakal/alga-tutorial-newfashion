@@ -47,6 +47,7 @@ helpMod mn = T.unlines
     , " Type \"submodule i\" to go to the submodule n° i." <> maybe "" (\n -> "Submodules available: " <> T.pack (show [0..n])) mn
     ]
 
+-- | Will display the help and start ask the user to choose a module
 main :: IO ()
 main = do
   -- Start the interpreter
@@ -57,6 +58,7 @@ main = do
   render $ help Nothing
   runMain
 
+-- | Run modules given a start point
 runModules :: Int -> IO ()
 runModules i = do
   putStrLn "In a module you have access to some other commands: "
@@ -70,6 +72,7 @@ runModules i = do
   putStrLn "You have finished the modules, what do you want to do next ?"
   runMain
 
+-- | Forever loop, asking user for input
 runMain :: IO ()
 runMain = forever $ do
     answerUser <- getUserInput
@@ -82,6 +85,7 @@ runMain = forever $ do
       Right{} -> doInColor Red $ putStrLn "It is not an action, type \"help\" for help"
 
 
+-- | Run submodules given maybe a start point
 runSubModules :: Int -- ^ The curent position in the module list
               -> [SubModule] -- ^ The list of submodules
               -> Maybe Int -- ^ Maybe somewhere to start in the submodule list
@@ -94,6 +98,7 @@ runSubModules pos arr i = forM_ (maybe id drop i arr) $ \s@SubModule{..} -> do
   runSubModule pos arr clue fullAnswer conclusion
   breakLine
 
+-- | Run a unique submodule
 runSubModule :: Int -> [SubModule] -> T.Text -> Answer -> T.Text -> IO ()
 runSubModule pos arr clue ans conclusion = do
   res <- runQuestion ans
@@ -130,6 +135,7 @@ runSubModule pos arr clue ans conclusion = do
   where
     defaultR = runSubModule pos arr clue ans conclusion
 
+-- | Ask the user for an answer
 runQuestion :: Answer -> IO (Either Instruction Bool)
 runQuestion ans = do
   answerUser <- getUserInput
@@ -155,17 +161,21 @@ handleCommand mans answerUser = case words answerUser of
   ("submodule":xs:_) -> return $ Left $ GoToSubModule $ read xs
   _ -> return $ Right answerUser
 
--- | Verify the given input using a provided answer to test
+-- | Verify the given input using a provided answer to test. Will tweak the output the mask the answer and tested arguments
 verifyInput :: Answer -> String -> IO Bool
 verifyInput ans answerUser = evalWithAns ans answerUser >>= either (\e -> printRed e >> return False) return
   where
     printRed e = removeAndPrint $ foldr (\todo -> T.replace todo (T.takeWhile (/= '=') todo)) e (decl ans)
     removeAndPrint = doInColor Red . T.putStrLn . T.replace (answer ans) "ANSWER"
 
+-- | Interface with haskeLine
 getUserInput :: IO String
 getUserInput = runInputT defaultSettings' $ fromMaybe (error "Nothing as input") <$> getInputLine "λ: "
   where
     defaultSettings' = defaultSettings {historyFile = Just ".history"}
+
+
+------ Output
 
 breakLine :: IO ()
 breakLine = putStr "\n"

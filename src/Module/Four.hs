@@ -40,22 +40,6 @@ mod4 = Module
       , fullAnswer = Answer "foldg Empty (\\x -> x * vertices (getConnections x)) Overlay Connect gr" GraphInt "(==)" ["gr = vertices [1,2,3,4,5,6,7,8,9]","getConnections x = if x == 1 then [1,2,3] else []"]
       , conclusion = "Let's continue"
       }
-    ,
-    SubModule
-      { abstract = "Oops every, you need to have an _undirected_ graph, if id 1 is connected to id 2 then id 2 is connected to id 1."
-      , instruction = "Make it undirected, certainly using _edgeList_ . Don't worry about optimization (i.e. if you duplicate edges)"
-      , clue = "For each edge, add the opposite in the graph"
-      , fullAnswer = Answer "foldr (\\(x,y) -> Overlay (edge x y)) gr $ edgeList gr" GraphInt "(==)" ["gr = edges [(1,2), (53,25)]"]
-      , conclusion = "Yeah the graph can go in production"
-      }
-    ,
-    SubModule
-      { abstract = "You just got a phone call, id 25 is bullied by id 53, please stop the connection between them"
-      , instruction = "Remove the connection !"
-      , clue = "A function must already exist, don't forget that you have two edges"
-      , fullAnswer = Answer "removeEdge 25 53 $ removeEdge 53 25 gr" GraphInt "(==)" ["gr = edges [(1,2), (53,25)]"]
-      , conclusion = "Let's continue"
-      }
     ]
   }
 
