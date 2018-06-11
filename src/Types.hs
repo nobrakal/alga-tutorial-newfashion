@@ -34,7 +34,14 @@ data TypeOf = GraphInt -- If the result is a graph
             | Str -- If it is a String
             | CanFind -- If the compiler can find the type itself
             | Comparison -- Compare
-            deriving (Show)
+            | CustomComp (String -> String)
+
+instance Show TypeOf where
+  show GraphInt = "GraphInt"
+  show Str = "Str"
+  show CanFind = "CanFind"
+  show Comparison = "Comparison"
+  show CustomComp{} = "CustomComp"
 
 instance Eq SubModule where
   (==) = on (==) abstract

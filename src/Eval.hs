@@ -25,6 +25,8 @@ interpretIt e = do
     , ModuleImport "PureIO" NotQualified NoImportList
     , ModuleImport "Data.Foldable" NotQualified NoImportList
     , ModuleImport "Data.Traversable" NotQualified NoImportList
+    , ModuleImport "Data.Function" NotQualified NoImportList
+    , ModuleImport "Data.Char" NotQualified NoImportList
     , ModuleImport "Algebra.Graph" NotQualified NoImportList
     ]
   interpret e (as :: Bool)
@@ -35,3 +37,4 @@ evalWithAns Answer{..} answerUser = evalIt $ "let " ++ T.unpack (T.intercalate "
   CanFind -> " (" ++ answerUser ++ " ) ( " ++ T.unpack answer ++" )"
   Str -> " \"" ++ answerUser ++ "\" \"" ++ T.unpack answer ++ "\""
   Comparison -> show (length answerUser) ++ " " ++ show (T.length answer) ++ " && (==)" ++ " (" ++ answerUser ++ ") (" ++ T.unpack answer ++" :: Graph Int )"
+  CustomComp f -> " \"" ++ answerUser ++ "\" \"" ++ T.unpack answer ++ "\"" ++ " && (==)" ++ " (" ++ f answerUser ++ ") (" ++ T.unpack answer ++" :: Graph Int )"
