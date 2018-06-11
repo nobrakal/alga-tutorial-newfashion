@@ -24,7 +24,7 @@ s0 = SubModule
     ,"So in a context of a Graph: 1 == Vertex 1"
     ]
   , instruction = "Try to connect 'Vertex 0' and 'Vertex 1' with this syntax"
-  , clue = "So like you can certainly drop the \"Vertex\" constructor"
+  , clue = "You can certainly drop the \"Vertex\" constructor"
   , fullAnswer = Answer "Connect 0 1" Comparison "(<=)" []
   , conclusion = "Is there other simplifications ?"
   }
@@ -46,11 +46,11 @@ s1 = SubModule
 s2 :: SubModule
 s2 = SubModule
   {abstract = T.intercalate "\n"
-      ["Your mathematician instincts are awaken, if there is a (+) operator, then there are good chances that there is neutral element n such that:\n"
+      ["Your mathematician instincts are awaken, if there is a (+) operator, then there are good chances that there is neutral element _n_ such that:\n"
       ,">>> n + 1 == 1"
       ]
   , instruction = "What can be this neutral element ?"
-  , clue = "Try to find a synonym to \"zero\" in graph theory"
+  , clue = "Try to find a synonym to \"zero\" in graph theory, and in alga"
   , fullAnswer = Answer "Empty" GraphInt "(==)" []
   , conclusion = "Let's continue"
   }
@@ -58,7 +58,7 @@ s2 = SubModule
 s3 :: SubModule
 s3 = SubModule
   {abstract = T.intercalate "\n"
-      ["If there is a (*) operator, then there are good chances that there is neutral element n such that:\n"
+      ["If there is a (*) operator, then there are good chances that there is neutral element _n_ such that:\n"
       ,">>> n * 1 = 1"
       ]
   , instruction = "What can be this neutral element ?"
