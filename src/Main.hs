@@ -33,16 +33,19 @@ modules :: [Module]
 modules = [mod0, mod1, mod2, mod3, mod4]
 
 help :: Maybe Int -> T.Text
-help mn = T.unlines $
+help mn = T.unlines
   [ "__Help__ :\n"
   , " Type \"help\" to show this message"
   , " Type \"quit\" to quit"
   , " Type \"module i\" to go to the module n° i. Modules available: \n  " <> T.intercalate "\n  " (snd (mapAccumL (\k v  -> (k+1, T.pack (show k ++ ". ") <> name v) ) (0 :: Int) modules))
-  ] ++ maybe [] (\n ->
+  ] <> maybe "" (helpMod . Just) mn
+
+helpMod :: Maybe Int -> T.Text
+helpMod mn = T.unlines
     [ " Type \"clue\" to have a clue on the current goal"
     , " Type \"skip\" to show the solution and skip"
-    , " Type \"submodule i\" to go to the submodule n° i. Submodules available: " <> T.pack (show [0..n])
-    ]) mn
+    , " Type \"submodule i\" to go to the submodule n° i." <> maybe "" (\n -> "Submodules available: " <> T.pack (show [0..n])) mn
+    ]
 
 main :: IO ()
 main = do
@@ -56,6 +59,8 @@ main = do
 
 runModules :: Int -> IO ()
 runModules i = do
+  putStrLn "In a module you have access to some other commands: "
+  T.putStrLn $ helpMod Nothing
   forM_ (drop i modules) $ \m@Module{..}-> do
     let (Just pos) = elemIndex m modules
     doInItalic $ putStr $ "Module "++ show pos ++ "/" ++ show (length modules - 1) ++ ": "

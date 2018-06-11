@@ -30,10 +30,10 @@ data Answer = Answer {
   decl   :: [T.Text] -- A list of declarations, used in the answer
 } deriving (Show)
 
-data TypeOf = GraphInt
-            | Str
-            | CanFind
-            | Comparison
+data TypeOf = GraphInt -- If the result is a graph
+            | Str -- If it is a String
+            | CanFind -- If the compiler can find the type itself
+            | Comparison -- Compare
             deriving (Show)
 
 instance Eq SubModule where
