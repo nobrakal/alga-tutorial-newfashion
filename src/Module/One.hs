@@ -47,7 +47,7 @@ s2 :: SubModule
 s2 = SubModule
   {abstract = T.intercalate "\n"
       ["Your mathematician instincts are awaken, if there is a (+) operator, then there are good chances that there is neutral element _n_ such that:\n"
-      ,">>> n + 1 == 1"
+      ,">>> n + 1 == 1 == 1 + n"
       ]
   , instruction = "What can be this neutral element ?"
   , clue = "Try to find a synonym to \"zero\" in graph theory, and in alga"
@@ -59,10 +59,10 @@ s3 :: SubModule
 s3 = SubModule
   {abstract = T.intercalate "\n"
       ["If there is a (*) operator, then there are good chances that there is neutral element _n_ such that:\n"
-      ,">>> n * 1 = 1"
+      ,">>> n * 1 = 1 == 1 * n"
       ]
   , instruction = "What can be this neutral element ?"
   , clue = "What neutral element have you already seen ?"
   , fullAnswer = Answer "Empty" GraphInt "(==)" []
-  , conclusion = "You are certainly a mathematician"
+  , conclusion = "You are certainly a mathematician."
   }

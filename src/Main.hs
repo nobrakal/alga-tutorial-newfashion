@@ -53,7 +53,11 @@ main = do
   -- Start the interpreter
   putStrLn "STARTING..."
   _ <- evalIt "True == False"
-  putStrLn "Welcome in alga-tutorial, this will teach you the basis of algebraic-graphs. To start the tutorial, type \"module 0\""
+  T.putStrLn $ T.unlines
+    ["Welcome in alga-tutorial, this will teach you the basis of algebraic-graphs."
+    ,"This tutorial will try to make you find how _alga_ is made. THis is not a simple task, so if don't find an answer, please use the _skip_ comand to skip the question and display the answer."
+    ,"To start the tutorial, type \"module 0\""
+    ]
   breakLine
   render $ help Nothing
   runMain
