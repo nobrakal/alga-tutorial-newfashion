@@ -35,6 +35,7 @@ data TypeOf = GraphInt -- If the result is a graph
             | CanFind -- If the compiler can find the type itself
             | Comparison -- Compare
             | CustomComp (String -> String)
+            | IOGraphInt 
 
 instance Show TypeOf where
   show GraphInt = "GraphInt"
@@ -42,6 +43,7 @@ instance Show TypeOf where
   show CanFind = "CanFind"
   show Comparison = "Comparison"
   show CustomComp{} = "CustomComp"
+  show IOGraphInt = "IOGraphInt"
 
 instance Eq SubModule where
   (==) = on (==) abstract

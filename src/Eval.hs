@@ -21,10 +21,11 @@ handleError (WontCompile lst) = "Wont Compile: \n" `T.append` T.unlines (map (\(
 interpretIt :: String -> InterpreterT IO Bool
 interpretIt e = do
   setImportsF
-    [ ModuleImport "Prelude" NotQualified (HidingList ["IO"])
-    , ModuleImport "PureIO" NotQualified NoImportList
+    [ ModuleImport "Prelude" NotQualified NoImportList
+    , ModuleImport "System.IO.Unsafe" NotQualified (ImportList ["unsafePerformIO"] )
     , ModuleImport "Data.Foldable" NotQualified NoImportList
     , ModuleImport "Data.Traversable" NotQualified NoImportList
+    , ModuleImport "Control.Applicative" NotQualified (ImportList ["liftA2"] )
     , ModuleImport "Data.Function" NotQualified NoImportList
     , ModuleImport "Data.Char" NotQualified NoImportList
     , ModuleImport "Algebra.Graph" NotQualified NoImportList
@@ -34,6 +35,7 @@ interpretIt e = do
 evalWithAns :: Answer -> String ->  IO (Either T.Text Bool)
 evalWithAns Answer{..} answerUser = evalIt $ "let " ++ T.unpack (T.intercalate ";" decl) ++ " in " ++ T.unpack verify ++ case typeOf of
   GraphInt -> " (" ++ answerUser ++ ") (" ++ T.unpack answer ++" :: Graph Int )"
+  IOGraphInt -> "( unsafePerformIO (" ++ answerUser ++ ")) (unsafePerformIO (" ++ T.unpack answer ++" :: IO (Graph Int) ))"
   CanFind -> " (" ++ answerUser ++ " ) ( " ++ T.unpack answer ++" )"
   Str -> " \"" ++ answerUser ++ "\" \"" ++ T.unpack answer ++ "\""
   Comparison -> show (length answerUser) ++ " " ++ show (T.length answer) ++ " && (==)" ++ " (" ++ answerUser ++ ") (" ++ T.unpack answer ++" :: Graph Int )"
