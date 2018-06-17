@@ -55,7 +55,7 @@ main = do
   _ <- evalIt "True == False"
   T.putStrLn $ T.unlines
     ["Welcome in alga-tutorial, this will teach you the basis of algebraic-graphs."
-    ,"This tutorial will try to make you find how _alga_ is made. THis is not a simple task, so if don't find an answer, please use the _skip_ comand to skip the question and display the answer."
+    ,"This tutorial will try to make you find how _alga_ is made. This is not a simple task, so if don't find an answer, please use the _skip_ comand to skip the question and display the answer."
     ,"To start the tutorial, type \"module 0\""
     ]
   breakLine
@@ -178,7 +178,6 @@ getUserInput = runInputT defaultSettings' $ fromMaybe (error "Nothing as input")
   where
     defaultSettings' = defaultSettings {historyFile = Just ".history"}
 
-
 ------ Output
 
 breakLine :: IO ()
@@ -214,7 +213,7 @@ render' t
 actAndReset :: IO () -> IO ()
 actAndReset act = act >> setSGR [Reset]
 
-renderDecl :: [(T.Text, T.Text)] -> IO ()
+renderDecl :: [(T.Text, (T.Text,a))] -> IO ()
 renderDecl arr = unless (null arr) $ do
   putStrLn "Available variables: "
-  mapM_ (\(x,t) -> T.putStrLn $ " * " <> T.takeWhile (/= ' ') x <> " :: " <> t)  arr
+  mapM_ (\(x,(t,_)) -> T.putStrLn $ " * " <> T.takeWhile (/= ' ') x <> " :: " <> t)  arr

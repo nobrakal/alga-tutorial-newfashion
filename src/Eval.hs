@@ -34,7 +34,7 @@ interpretIt e = do
   interpret e (as :: Bool)
 
 evalWithAns :: Answer -> String ->  IO (Either T.Text Bool)
-evalWithAns Answer{..} answerUser = evalIt $ "let " ++ T.unpack (T.intercalate ";" $ map (\(x,t) -> x <> " :: " <> t) decl) ++ " in " ++ T.unpack verify ++ case typeOf of
+evalWithAns Answer{..} answerUser = evalIt $ "let " ++ T.unpack (T.intercalate ";" $ map (\(x,(t,b)) -> x <> if b then " :: " <> t else "") decl) ++ " in " ++ T.unpack verify ++ case typeOf of
   GraphInt -> " (" ++ answerUser ++ ") (" ++ T.unpack answer ++" :: Graph Int )"
   IOGraphInt -> "( unsafePerformIO (" ++ answerUser ++ ")) (unsafePerformIO (" ++ T.unpack answer ++" :: IO (Graph Int) ))"
   CanFind -> " (" ++ answerUser ++ " ) ( " ++ T.unpack answer ++" )"
