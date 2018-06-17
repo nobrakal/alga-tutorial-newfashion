@@ -18,7 +18,7 @@ mod3 = Module
       { abstract = "Graph is a _Functor_ instance. This means that you can use 'fmap' on graphs. It will apply a function on each vertex."
       , instruction = "You want add 1 to each vertex of a graph \"gr\". How will you do that using fmap ?"
       , clue = "Considerate \"gr\" as a list and try to add 1 to each elements"
-      , fullAnswer = Answer "fmap (+ 1) gr" GraphInt "(==)" ["gr = 1 + 2 * 3 + 5 * 6"]
+      , fullAnswer = Answer "fmap (+ 1) gr" GraphInt "(==)" [("gr = 1 + 2 * 3 + 5 * 6","Graph Int")]
       , conclusion = "Can we do more ?"
       }
     ,
@@ -26,7 +26,7 @@ mod3 = Module
       { abstract = "This _Functor_ instance can do a lot."
       , instruction = "Imagine now you are wanting to replace 0 by 1 everywhere in your graph \"gr\""
       , clue = "Considerate \"gr\" as a list"
-      , fullAnswer = Answer "fmap (\\x -> if x == 0 then 1 else x) gr" GraphInt "(==)" ["gr = 1 + 2 * 3 + 5 * 6"]
+      , fullAnswer = Answer "fmap (\\x -> if x == 0 then 1 else x) gr" GraphInt "(==)" [("gr = 1 + 2 * 3 + 5 * 6","Graph Int")]
       , conclusion = "Great you have found the implementation of _replaceVertex_"
       }
     ,
@@ -42,7 +42,7 @@ mod3 = Module
       { abstract = "Graph is also an instance of _Traversable_"
       , instruction = "You have a graph \"gr :: Graph (Maybe Int)\", and you want to \"strip out\" the \"Maybe\", obtaining \"gr :: Maybe (Graph a)\" set to \"Nothing\" if there was a \"Nothing\" vertices or \"Just gr\" if there was only \"Just\" vertices. Can you do that ? "
       , clue = "Striping-out things is often called \"sequence\""
-      , fullAnswer = Answer "sequence gr" CanFind "(==)" ["gr = Connect (pure (Just 1)) (pure (Just 2)) :: Graph (Maybe Int)"]
+      , fullAnswer = Answer "sequence gr" CanFind "(==)" [("gr = Connect (pure (Just 1)) (pure (Just 2))","Graph (Maybe Int)")]
       , conclusion = "This can be also used with the IO monad to get pretty cool results"
       }
     ,
@@ -60,7 +60,7 @@ mod3 = Module
         ]
       , instruction = "If you should write a function that calculate all the \"Vertex\" of a graph \"gr\", including duplicates, how will you do using foldg ?"
       , clue = "As you can see on the definition of \"foldg\", you should provide a function for each cases possible in a graph."
-      , fullAnswer = Answer "foldg 0 (const 1) (+) (+) gr" GraphInt "(==)" ["gr = 1 + 2 * 3 + 5 * 6"]
+      , fullAnswer = Answer "foldg 0 (const 1) (+) (+) gr" GraphInt "(==)" [("gr = 1 + 2 * 3 + 5 * 6","Graph Int")]
       , conclusion = "This is almost the implementation of _size_"
       }
     ,
@@ -68,7 +68,7 @@ mod3 = Module
       { abstract = "foldg can also produce a Graph"
       , instruction = "You are wanting to _transpose_ a graph \"gr\", inverting all its edges"
       , clue = "Only Connect can produce an edge, so you should try to make something _only_ with it"
-      , fullAnswer = Answer "foldg Empty Vertex Overlay (flip Connect) gr" GraphInt "(==)" ["gr = 1 + 2 * 3 + 5 * 6"]
+      , fullAnswer = Answer "foldg Empty Vertex Overlay (flip Connect) gr" GraphInt "(==)" [("gr = 1 + 2 * 3 + 5 * 6","Graph Int")]
       , conclusion = "This is the current implementation of _transpose_"
       }
     ,
@@ -84,7 +84,7 @@ mod3 = Module
         ]
       , instruction = "You are wanting to add a level to a graph \"gr\", that is replacing all his vertices by an overlay of two vertices _of_ _the_ _same_ _label_ than the previous vertex. How can you do that using the bind (>>=) operator ?"
       , clue = "Write first the function that produce a graph with two vertices of the same label given as input"
-      , fullAnswer = Answer "gr >>= (\\x -> x + x)" GraphInt "(==)" ["gr = 1 + 2 * 3 + 5 * 6"]
+      , fullAnswer = Answer "gr >>= (\\x -> x + x)" GraphInt "(==)" [("gr = 1 + 2 * 3 + 5 * 6","Graph Int")]
       , conclusion = "Powerful monads..."
       }
     ]

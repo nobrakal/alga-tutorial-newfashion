@@ -11,7 +11,12 @@ mod2 :: Module
 mod2 = Module
   {
   name = "Mathematical laws",
-  desc = "If there is an algebra, then there is mathematicals laws",
+  desc = T.unlines
+    [ "If there is an algebra, then there is mathematicals laws"
+    , "We will work with the Num instance, remember:"
+    , " (+) = Overlay"
+    , " (*) = Connect"
+    ] ,
   subs =
     [
     SubModule

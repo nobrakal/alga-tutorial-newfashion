@@ -8,7 +8,7 @@ import Data.Maybe (fromMaybe)
 import Data.List (elemIndex, mapAccumL)
 import System.Exit
 import Data.Monoid ((<>))
-import Control.Monad (when, forever)
+import Control.Monad (when, unless, forever)
 import Data.Bifunctor (second)
 
 import qualified Data.Text as T
@@ -99,8 +99,8 @@ runSubModules pos arr i = forM_ (maybe id drop i arr) $ \s@SubModule{..} -> do
   doInItalic $ putStr $ "SubModule "++ show pos' ++ "/" ++ show (length arr - 1) ++ ": "
   render abstract
   render instruction
+  renderDecl $ decl fullAnswer
   runSubModule pos arr clue fullAnswer conclusion
-  breakLine
 
 -- | Run a unique submodule
 runSubModule :: Int -> [SubModule] -> T.Text -> Answer -> T.Text -> IO ()
@@ -169,7 +169,7 @@ handleCommand mans answerUser = case words answerUser of
 verifyInput :: Answer -> String -> IO Bool
 verifyInput ans answerUser = evalWithAns ans answerUser >>= either (\e -> printRed e >> return False) return
   where
-    printRed e = removeAndPrint $ foldr (\todo -> T.replace todo (T.takeWhile (/= '=') todo)) e (decl ans)
+    printRed e = removeAndPrint $ foldr (\todo -> T.replace todo (T.takeWhile (/= '=') todo)) e (map fst $ decl ans)
     removeAndPrint = doInColor Red . T.putStrLn . T.replace (answer ans) "ANSWER"
 
 -- | Interface with haskeLine
@@ -213,3 +213,8 @@ render' t
 
 actAndReset :: IO () -> IO ()
 actAndReset act = act >> setSGR [Reset]
+
+renderDecl :: [(T.Text, T.Text)] -> IO ()
+renderDecl arr = unless (null arr) $ do
+  putStrLn "Available variables: "
+  mapM_ (\(x,t) -> T.putStrLn $ " * " <> T.takeWhile (/= ' ') x <> " :: " <> t)  arr
