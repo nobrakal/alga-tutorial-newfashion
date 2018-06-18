@@ -34,11 +34,11 @@ mod4 = Module
       }
     ,
     SubModule
-      { abstract = "The previous question was simple, now you just checked, and _isPresent_ is of type _Int_ _->_ _IO_ _Bool_ . How can you adapt you code ?"
-      , instruction = "You certainly need to use the _Applicative_ instance of _Graph_ on _overlay_ and _connect_"
-      , clue = "Use a combination of _sequence_ and _foldg_"
-      , fullAnswer = Answer "foldg (return empty) (\\x -> (\\y -> if y then vertex x else empty) <$> isPresent x) (liftA2 overlay) (liftA2 connect) gr" IOGraphInt "(==)" [("gr = vertices [1,2,3,4,5,6,7,8,9]",("Graph Int",True)),("isPresent x = return (x==1)",("Int -> IO Bool",False))]
-      , conclusion = "This one was tricky"
+      { abstract = "Ok, then we will write our main loop. The first thing to do is to add a connection when requested. Imagine the id 5 has requested to get in touch with id 15"
+      , instruction = "Add an edge between vertex 5 and vertex 15 (and because we work with _Directed_ _Graph_ , add an edge between vertex 15 and vertex 5"
+      , clue = "There not yet wonderfull method to do that"
+      , fullAnswer = Answer "(15 * 5) + (5 * 15) + gr" GraphInt "(==)" [("gr = vertices [1,2,3,4,5,6,7,8,9]",("Graph Int",True))]
+      , conclusion = "Let's continue"
       }
     ]
   }
