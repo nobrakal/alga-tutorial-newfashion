@@ -21,7 +21,7 @@ s00  = SubModule
   , instruction = "How would you describe an empty graph ?"
   , clue = "Maybe simply by writing the thing down"
   , fullAnswer = Answer "Empty" Str "on (<=) (length . words)" []
-  , conclusion = "You entered a single word, in Haskell this is likely a constant function. In Alga, the empty graph is simply denoted by the _Empty_ constant function"
+  , conclusion = "You entered a single word, in Haskell this is likely a constant function. In Alga, the empty graph is simply denoted by the _Empty_ constructor"
   }
 
 s01 :: SubModule
@@ -30,7 +30,7 @@ s01  = SubModule
   , instruction = "How would you describe a single _Vertex_ identified by \"0\" ?"
   , clue = "Maybe simply by writing the thing down"
   , fullAnswer = Answer "Vertex 0" Str "(\\y _ -> (length (words y) == 2) && isDigit (last $ last $ words y))" []
-  , conclusion = "You entered a single word followed by a number, that is _Constructor_ . In Alga, the vertex constructor is called _Vertex_"
+  , conclusion = "You entered a single word followed by a number. In Alga, the vertex constructor is called _Vertex_"
   }
 
 s02 :: SubModule
@@ -39,7 +39,7 @@ s02  = SubModule
   , instruction = "How would you describe a graph that _Overlay_ a single vertex 0 and a single vertex 1 ?"
   , clue = "Maybe simply by writing the thing down"
   , fullAnswer = Answer "Overlay (Vertex 0) (Vertex 1)" (CustomComp (\x -> unwords $ "Overlay" : tail (words x))) "(\\x _ -> (length (words x) > 1))" []
-  , conclusion = "You entered a single function for overlaying two vertices. In Alga, this function is named _Overlay_ . Note that _Overlay_ is _commutative_ : Overlay (Vertex 0) (Vertex 1) == Overlay (Vertex 1) (Vertex 0)... Is there other maths here ?"
+  , conclusion = "You entered a single function for overlaying two vertices. In Alga, this function is named _Overlay_ . Note that _Overlay_ is _commutative_ : Overlay (Vertex 0) (Vertex 1) == Overlay (Vertex 1) (Vertex 0)"
   }
 
 s03 :: SubModule
@@ -57,7 +57,7 @@ s03  = SubModule
 
 s04 :: SubModule
 s04 = SubModule
-  { abstract = "Is that all ? Yes, almsot. As you noticed, you can _Overlay_ and _Connect_ any graph. Connecting two graphs correspond to add an edge between each vertex from the left side to the right one"
+  { abstract = "Is that all ? Yes, almsot. As you noticed, you can _Overlay_ and _Connect_ any graph. Connecting two graphs correspond to add an edge between each vertex from the left side to the right one."
   , instruction = "For example, try to find a condensed representation the graph composed by the following edges: (0,1), (0,2), (1,2)"
   , clue = "Use Connect wisely, you don't need to overlay anything"
   , fullAnswer = Answer "Connect (Vertex 0) (Connect (Vertex 1) (Vertex 2))" GraphInt "(===)" []

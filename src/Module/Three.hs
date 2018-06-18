@@ -67,7 +67,7 @@ mod3 = Module
     SubModule
       { abstract = "foldg can also produce a Graph"
       , instruction = "You are wanting to _transpose_ a graph \"gr\", inverting all its edges"
-      , clue = "Only Connect can produce an edge, so you should try to make something _only_ with it"
+      , clue = "Only Connect can produce an edge, so you should try to change something _only_ with it"
       , fullAnswer = Answer "foldg Empty Vertex Overlay (flip Connect) gr" GraphInt "(==)" [("gr = 1 + 2 * 3 + 5 * 6",("Graph Int",True))]
       , conclusion = "This is the current implementation of _transpose_"
       }

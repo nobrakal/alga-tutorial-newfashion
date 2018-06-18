@@ -21,9 +21,10 @@ s0 = SubModule
     ["If your vertices are a _Num_ instance, then your Graph is also is a _Num_ instance."
     ,"Here we have:\n"
     ,">>> fromInteger = Vertex\n"
-    ,"So in a context of a Graph: 1 == Vertex 1"
+    ,"So in a context of a Graph:\n"
+    ,">>> 1 == Vertex 1"
     ]
-  , instruction = "Try to connect 'Vertex 0' and 'Vertex 1' with this syntax"
+  , instruction = "Try to connect 'Vertex 0' and 'Vertex 1' with this syntax."
   , clue = "You can certainly drop the \"Vertex\" constructor"
   , fullAnswer = Answer "Connect 0 1" Comparison "(<=)" []
   , conclusion = "Is there other simplifications ?"
@@ -32,12 +33,12 @@ s0 = SubModule
 s1 :: SubModule
 s1 = SubModule
   {abstract = T.intercalate "\n"
-    ["If you are a _Num_ instance, then you have '+' and '*' defined"
+    ["If you are a _Num_ instance, then you have '+' and '*' defined."
     ,"Here we have:\n"
     ,">>> (+) = Overlay"
     ,">>> (*) = Connect"
     ]
-  , instruction = "Try to connect 'Vertex 0' and 'Vertex 1' with this syntax, and with what we have seen before"
+  , instruction = "Try to connect 'Vertex 0' and 'Vertex 1' with this syntax, and with what we have seen before."
   , clue = "Connect = (+)"
   , fullAnswer = Answer "0 * 1" Comparison "(<=)" []
   , conclusion = "Note that (+) is commutative but not (*)"
