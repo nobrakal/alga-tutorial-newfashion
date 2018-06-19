@@ -1,0 +1,70 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{listings}
+\title{Alga tutorial}
+\date{}
+\begin{document}
+\maketitle
+
+\section{Introduction}
+
+%TODO
+
+\section{Part 1: The graph definition}
+\subsection{The problem}
+Graphs are traditionally defined as a pair of set V of vertices and E of edges. This is great when working with traditional imperative languages, but leads to some problems when trying to use it in functional languages such as Haskell.
+
+The idea of alga is to use an other definition of graph, more “functional-friendly”. And as the most part of the “functional-friendly” data structures is recursive, such is the alga’s graph definition:
+
+\subsection{A solution}
+\begin{lstlisting}[language=Haskell, frame=single]
+data Graph a = Empty
+             | Vertex a
+             | Overlay (Graph a) (Graph a)
+             | Connect (Graph a) (Graph a)
+\end{lstlisting}
+
+So it says:
+
+\begin{enumerate}
+\item You have an only way to construct the empty graph, using the constructor `Empty` which does not take any argument.
+
+\item You can construct a graph from anything, transforming it in a single vertex, using the constructor `Vertex`.
+
+\item You can overlay two graphs, that is just to put them next one to an other.
+
+%TODO img
+
+\item You can connect two graphs, that is drawing an edge from each vertex of the left side to each vertex to the right side.
+
+%TODO img
+\end{enumerate}
+
+\subsection{Some examples}
+
+So, how to use this definition ? Here some examples:
+
+\begin{itemize}
+	\item A single path, from a vertex 0 to a vertex 1 can be viewed as \emph{Connect (Vertex 0) (Vertex 1)} %TODO img
+	\item A triangle, with an edge from vertex 0 to vertex 1, an edge from vertex 0 to vertex 2, and an edge from vertex 1 to vertex 2 can be viewed as \emph{Connect (Vertex 0) (Connect (Vertex 1) (Vertex 2))} %TODO img
+\end{itemize}
+
+\subsection{The benefits}
+On of the very advantage given by this representation is the ability to define the \emph{foldg} function, a kind of adapted fold for graph:
+\begin{lstlisting}[language=Haskell, frame=single]
+foldg :: b -> (a -> b) -> (b -> b -> b)
+      -> (b -> b -> b) -> Graph a -> b
+foldg e v o c = go
+	where
+	go Empty         = e
+	go (Vertex  x  ) = v x
+	go (Overlay x y) = o (go x) (go y)
+	go (Connect x y) = c (go x) (go y)
+\end{lstlisting}
+In other words, the \emph{foldg} function take a base case for \emph{Empty} graphs, something to transform a \emph{Vertex}, and combining functions when we encounter \emph{Overlay} or \emph{Connect}.
+
+\end{document}
