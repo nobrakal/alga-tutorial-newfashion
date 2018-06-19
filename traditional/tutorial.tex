@@ -17,7 +17,7 @@
 
 %TODO
 
-\section{Part 1: The graph definition}
+\section{The graph definition}
 \subsection{The problem}
 Graphs are traditionally defined as a pair of set V of vertices and E of edges. This is great when working with traditional imperative languages, but leads to some problems when trying to use it in functional languages such as Haskell.
 
@@ -47,6 +47,8 @@ So it says:
 %TODO img
 \end{enumerate}
 
+Simple, no ?
+
 \subsection{Some examples}
 
 So, how to use this definition ? Here some examples:
@@ -56,7 +58,87 @@ So, how to use this definition ? Here some examples:
 	\item A triangle, with an edge from vertex 0 to vertex 1, an edge from vertex 0 to vertex 2, and an edge from vertex 1 to vertex 2 can be viewed as  \verb|Connect (Vertex 0) (Connect (Vertex 1) (Vertex 2))| %TODO img
 \end{itemize}
 
-\subsection{The benefits}
+"Berk, but writing big graphs by hand can become very annoying !". Don't worry, there are some shortcuts.
+
+\section{Going deeper in the definition}
+
+\subsection{The Num instance}
+\verb|Overlay| and \verb|Connect| looks like operators, and we want to use them as. So we pose:
+
+\begin{lstlisting}[language=Haskell, frame=single]
+(+) = Overlay
+(*) = Connect
+\end{lstlisting}
+
+In fact, if we have something of the \verb|Num| instance, we can transform it directly into a graph using \verb|Vertex|. This leads to this instance:
+
+\begin{lstlisting}[language=Haskell, frame=single]
+instance Num a => Num (Graph a) where
+	fromInteger = Vertex . fromInteger
+	(+)         = Overlay
+	(*)         = Connect
+	signum      = const Empty
+	abs         = id
+	negate      = id
+\end{lstlisting}
+
+This means that, in a context of a \verb|Graph|, we have \verb|Vertex 1 == 1|
+
+Do you see why alga is an implementation of an \emph{algebra} of graphs? So because we have an Algebra, there is some mathematical laws. No please don't run away like you have seen a zombie in a graveyard ! Don't worry, they are simple !
+
+\subsection{Overlay}
+
+As usual, \verb|(+)| is \emph{associative} (the order in which you are choosing to overlay graphs is not important):
+\begin{lstlisting}[language=Haskell, frame=single]
+(1 + 2) + 3 == 1 + (2 + 3)
+\end{lstlisting}
+
+It is also \emph{commutative}:
+\begin{lstlisting}[language=Haskell, frame=single]
+1 + 2 == 2 + 1
+\end{lstlisting}
+
+It has \verb|Empty| as a neutral element:
+\begin{lstlisting}[language=Haskell, frame=single]
+1 + Empty == 1 == Empty + 1
+\end{lstlisting}
+
+It is \emph{idempotent} (overlaying a graph with itself is the same graph):
+\begin{lstlisting}[language=Haskell, frame=single]
+1 + 1 == 1
+\end{lstlisting}
+
+\subsection{Connect}
+As usual, \verb|(*)| is \emph{associative} (the order in which you are choosing to connect graphs is not important):
+\begin{lstlisting}[language=Haskell, frame=single]
+(1 * 2) * 3 == 1 * (2 * 3)
+\end{lstlisting}
+
+It is NOT \emph{commutative}:
+\begin{lstlisting}[language=Haskell, frame=single]
+1 * 2 /= 2 * 1
+\end{lstlisting}
+
+And it has \verb|Empty| as a neutral element:
+\begin{lstlisting}[language=Haskell, frame=single]
+1 * Empty == 1 == Empty * 1
+\end{lstlisting}
+
+It can absorb (connecting three times the same graph is the same as connecting two times the same graph)
+\begin{lstlisting}[language=Haskell, frame=single]
+1 * 1 * 1 == 1 * 1
+\end{lstlisting}
+
+\subsection{The two together}
+Do you remind when you have discovered that you can mix $+$ and $*$ in the same equation ? This is the same thing here !
+\begin{lstlisting}[language=Haskell, frame=single]
+1 + (2 * 3) == 1 * 2 + 1 * 3
+\end{lstlisting}
+
+Whew, this is done we can  make a step forward.
+
+\section{The benefits of the definition}
+\subsection{foldg}
 On of the very advantage given by this representation is the ability to define the \verb|foldg| function, a kind of adapted fold for graph:
 \begin{lstlisting}[language=Haskell, frame=single]
 foldg :: b -> (a -> b) -> (b -> b -> b)
@@ -70,8 +152,54 @@ foldg e v o c = go
 \end{lstlisting}
 In other words, the \verb|foldg| function take a base case for \verb|Empty| graphs, something to transform a \verb|Vertex|, and combining functions when we encounter \verb|Overlay| or \verb|Connect|.
 
-\subsubsection{Transpose}
+\subsection{Transpose}
 
-We have a wonderful graph \verb|gr :: Graph Int| and we want to \verb|transpose| it, 
+We have a wonderful graph \verb|gr :: Graph Int| and we want to \verb|transpose| it. Using \verb|foldg| this is a piece of cake:
 
+\begin{lstlisting}[language=Haskell, frame=single]
+transpose :: Graph a -> Graph a
+transpose = foldg Empty Vertex Overlay (flip Connect)
+\end{lstlisting}
+
+\subsection{Induce}
+
+Still not convinced ? Let's try to build an induced sub-graph. An induced sub-graph is a sub-graph that "forget" about some vertices and all edges to and from these vertices. For example: IMG
+
+So, we are going to code the \verb|induce :: (a -> bool ) -> Graph a -> Graph a| function. We will use \verb|foldg| (that the good point of tutorial, you could almost write this yourself)
+
+What is the base case ? Do we need to change an \verb|Empty| graph ? No of course:
+
+\begin{lstlisting}[language=Haskell, frame=single]
+induce :: (a -> Bool) -> Graph a -> Graph a
+induce predicate = foldg
+  Empty 
+  undefined
+  undefined
+  undefined
+\end{lstlisting}
+
+Then if we encounter a vertex, we need to verify if it satisfy the predicate. If it does not, we will simply replace it... let's say by the empty graph !
+
+\begin{lstlisting}[language=Haskell, frame=single]
+induce :: (a -> Bool) -> Graph a -> Graph a
+induce predicate = foldg 
+  Empty
+  (\x -> if predicate x then Vertex x else Empty)
+  undefined
+  undefined
+\end{lstlisting}
+ 
+And finally do we need to touch connection between base graphs ? Not at all! Remember, \verb|Empty| is the neutral element of \emph{both} \verb|Connect| and \verb|Overlay|. So we can leave our empty graphs inside the structure without problem (don't worry, the real implementation get rid of these empty leaves). So we come to
+
+\begin{lstlisting}[language=Haskell, frame=single]
+induce :: (a -> Bool) -> Graph a -> Graph a
+induce predicate = foldg 
+  Empty 
+  (\x -> if predicate x then Vertex x else Empty)
+  Overlay
+  Connect
+\end{lstlisting}
+
+So simple, isn't it ?
+ 
 \end{document}
