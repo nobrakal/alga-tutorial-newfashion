@@ -7,6 +7,9 @@
 \usepackage{listings}
 \title{Alga tutorial}
 \date{}
+
+\newenvironment{allintypewriter}{\ttfamily}{\par}
+
 \begin{document}
 \maketitle
 
@@ -31,9 +34,9 @@ data Graph a = Empty
 So it says:
 
 \begin{enumerate}
-\item You have an only way to construct the empty graph, using the constructor `Empty` which does not take any argument.
+\item You have an only way to construct the empty graph, using the constructor \verb|Empty| which does not take any argument.
 
-\item You can construct a graph from anything, transforming it in a single vertex, using the constructor `Vertex`.
+\item You can construct a graph from anything, transforming it in a single vertex, using the constructor \verb|Vertex|.
 
 \item You can overlay two graphs, that is just to put them next one to an other.
 
@@ -49,12 +52,12 @@ So it says:
 So, how to use this definition ? Here some examples:
 
 \begin{itemize}
-	\item A single path, from a vertex 0 to a vertex 1 can be viewed as \emph{Connect (Vertex 0) (Vertex 1)} %TODO img
-	\item A triangle, with an edge from vertex 0 to vertex 1, an edge from vertex 0 to vertex 2, and an edge from vertex 1 to vertex 2 can be viewed as \emph{Connect (Vertex 0) (Connect (Vertex 1) (Vertex 2))} %TODO img
+	\item A single path, from a vertex 0 to a vertex 1 can be viewed as \verb|Connect (Vertex 0) (Vertex 1)| %TODO img
+	\item A triangle, with an edge from vertex 0 to vertex 1, an edge from vertex 0 to vertex 2, and an edge from vertex 1 to vertex 2 can be viewed as  \verb|Connect (Vertex 0) (Connect (Vertex 1) (Vertex 2))| %TODO img
 \end{itemize}
 
 \subsection{The benefits}
-On of the very advantage given by this representation is the ability to define the \emph{foldg} function, a kind of adapted fold for graph:
+On of the very advantage given by this representation is the ability to define the \verb|foldg| function, a kind of adapted fold for graph:
 \begin{lstlisting}[language=Haskell, frame=single]
 foldg :: b -> (a -> b) -> (b -> b -> b)
       -> (b -> b -> b) -> Graph a -> b
@@ -65,6 +68,10 @@ foldg e v o c = go
 	go (Overlay x y) = o (go x) (go y)
 	go (Connect x y) = c (go x) (go y)
 \end{lstlisting}
-In other words, the \emph{foldg} function take a base case for \emph{Empty} graphs, something to transform a \emph{Vertex}, and combining functions when we encounter \emph{Overlay} or \emph{Connect}.
+In other words, the \verb|foldg| function take a base case for \verb|Empty| graphs, something to transform a \verb|Vertex|, and combining functions when we encounter \verb|Overlay| or \verb|Connect|.
+
+\subsubsection{Transpose}
+
+We have a wonderful graph \verb|gr :: Graph Int| and we want to \verb|transpose| it, 
 
 \end{document}
