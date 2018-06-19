@@ -5,10 +5,10 @@
 \usepackage{amsfonts}
 \usepackage{amssymb}
 \usepackage{listings}
+\usepackage{graphicx}
+
 \title{Alga tutorial}
 \date{}
-
-\newenvironment{allintypewriter}{\ttfamily}{\par}
 
 \begin{document}
 \maketitle
@@ -40,22 +40,34 @@ So it says:
 
 \item You can overlay two graphs, that is just to put them next one to an other.
 
-%TODO img
+\begin{center}
+	\includegraphics[scale=0.4]{figspng/overlay.png}
+\end{center}
 
 \item You can connect two graphs, that is drawing an edge from each vertex of the left side to each vertex to the right side.
 
-%TODO img
+\begin{center}
+	\includegraphics[scale=0.4]{figspng/connect.png}
+\end{center}
+
 \end{enumerate}
 
-Simple, no ?
+Simple, no?
 
 \subsection{Some examples}
 
-So, how to use this definition ? Here some examples:
+So, how to use this definition? Here some examples:
 
 \begin{itemize}
-	\item A single path, from a vertex 0 to a vertex 1 can be viewed as \verb|Connect (Vertex 0) (Vertex 1)| %TODO img
-	\item A triangle, with an edge from vertex 0 to vertex 1, an edge from vertex 0 to vertex 2, and an edge from vertex 1 to vertex 2 can be viewed as  \verb|Connect (Vertex 0) (Connect (Vertex 1) (Vertex 2))| %TODO img
+	\item A single path, from a vertex 0 to a vertex 1 can be viewed as \verb|Connect (Vertex 0) (Vertex 1)| 
+	\begin{center}
+	\includegraphics[scale=0.5]{figspng/e2.png}
+	\end{center}
+	\item A triangle, with an edge from vertex 0 to vertex 1, an edge from vertex 0 to vertex 2, and an edge from vertex 1 to vertex 2 can be viewed as  \verb|Connect (Vertex 0) (Connect (Vertex 1) (Vertex 2))| 
+	\begin{center}
+	\includegraphics[scale=0.5]{figspng/e1.png}
+	\end{center}
+
 \end{itemize}
 
 "Berk, but writing big graphs by hand can become very annoying !". Don't worry, there are some shortcuts.
@@ -82,9 +94,9 @@ instance Num a => Num (Graph a) where
 	negate      = id
 \end{lstlisting}
 
-This means that, in a context of a \verb|Graph|, we have \verb|Vertex 1 == 1|
+This means that, in a context of a \verb|Graph|, we have \verb|Vertex 1 == 1|, which is quite useful !
 
-Do you see why alga is an implementation of an \emph{algebra} of graphs? So because we have an Algebra, there is some mathematical laws. No please don't run away like you have seen a zombie in a graveyard ! Don't worry, they are simple !
+Do you see why alga is an implementation of an \emph{algebra} of graphs? There is a lot of maths here ! No please don't run away like you have seen a zombie in a graveyard ! Don't worry, this is not-so-difficult math.
 
 \subsection{Overlay}
 
@@ -154,7 +166,7 @@ In other words, the \verb|foldg| function take a base case for \verb|Empty| grap
 
 \subsection{Transpose}
 
-We have a wonderful graph \verb|gr :: Graph Int| and we want to \verb|transpose| it. Using \verb|foldg| this is a piece of cake:
+We have a wonderful graph and we want to \verb|transpose| it. Using \verb|foldg| this is a piece of cake:
 
 \begin{lstlisting}[language=Haskell, frame=single]
 transpose :: Graph a -> Graph a
@@ -163,7 +175,7 @@ transpose = foldg Empty Vertex Overlay (flip Connect)
 
 \subsection{Induce}
 
-Still not convinced ? Let's try to build an induced sub-graph. An induced sub-graph is a sub-graph that "forget" about some vertices and all edges to and from these vertices. For example: IMG
+Still not convinced ? Let's try to build an induced sub-graph. An induced sub-graph is a sub-graph that "forget" about some vertices and all edges to and from these vertices.
 
 So, we are going to code the \verb|induce :: (a -> bool ) -> Graph a -> Graph a| function. We will use \verb|foldg| (that the good point of tutorial, you could almost write this yourself)
 
