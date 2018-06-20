@@ -1,0 +1,15 @@
+body {
+  padding: 3% 5%;
+}
+
+img {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 2% 0%;
+  width: 25%;
+}
+
+.big {
+  width: 60%;
+}
