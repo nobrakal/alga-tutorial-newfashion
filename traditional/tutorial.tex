@@ -6,8 +6,9 @@
 \usepackage{amssymb}
 \usepackage{listings}
 \usepackage{graphicx}
+\usepackage{hyperref}
 
-\title{Alga tutorial}
+\title{An Alga tutorial}
 \date{}
 
 \begin{document}
@@ -15,7 +16,9 @@
 
 \section{Introduction}
 
-%TODO
+Here you will learn the basis of \href{http://hackage.haskell.org/package/algebraic-graphs}{Alga}, an implementation of an algebra of graphs.
+
+Every given example is runnable, so please feel free to install alga (with \verb|cabal| of \verb|stack|) and have a GHCi console near you if you want to try the code. All you need to have is contained in the \verb|Algebra.Graph| module.
 
 \section{The graph definition}
 \subsection{The problem}
@@ -69,8 +72,11 @@ So, how to use this definition? Here some examples:
 	\end{center}
 
 \end{itemize}
-
-"Berk, but writing big graphs by hand can become very annoying !". Don't worry, there are some shortcuts.
+I heard you from my desktop:
+\begin{quote}
+	"Berk, but writing big graphs by hand can become very annoying !"
+\end{quote}
+Don't worry, there are some shortcuts.
 
 \section{Going deeper in the definition}
 

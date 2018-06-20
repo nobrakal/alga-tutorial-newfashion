@@ -1,5 +1,6 @@
 body {
   padding: 3% 5%;
+  counter-reset: part;
 }
 
 img {
@@ -12,4 +13,14 @@ img {
 
 .big {
   width: 60%;
+}
+
+h1::before {
+  counter-increment: part;
+  content: "Part " counter(part) ". ";
+}
+
+h1.title::before {
+  content: none;
+  counter-increment: none;
 }
