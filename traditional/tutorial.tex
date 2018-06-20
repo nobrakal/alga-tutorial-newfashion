@@ -177,7 +177,7 @@ transpose = foldg Empty Vertex Overlay (flip Connect)
 
 Still not convinced ? Let's try to build an induced sub-graph. An induced sub-graph is a sub-graph that "forget" about some vertices and all edges to and from these vertices.
 
-So, we are going to code the \verb|induce :: (a -> bool ) -> Graph a -> Graph a| function. We will use \verb|foldg| (that the good point of tutorial, you could almost write this yourself)
+So, we are going to code the \verb|induce :: (a -> bool) -> Graph a -> Graph a| function. We will use \verb|foldg| (that the good point of tutorial, you could almost write this yourself)
 
 What is the base case ? Do we need to change an \verb|Empty| graph ? No of course:
 
@@ -227,14 +227,31 @@ instance Functor (Graph a) where
   fmap f (Connect a b) = Connect (fmap f a) (fmap f b)
 \end{lstlisting}
  
-This means that if you have something to transform a \verb|a| in a \verb|b| then you can transform a \verb|Graph a| into a \verb|Graph b|
+This means that if you have something to transform a \verb|a| in a \verb|b| then you can transform a \verb|Graph a| into a \verb|Graph b| 
  
 Alert ! Alert ! Haskeller's alarm ring ! If there is a \verb|Functor| instance, is there a \verb|Monad| one ?
+
 \subsection{Monad}
 \verb|Graph| are indeed a \verb|Monad| instance:
 \begin{lstlisting}[language=Haskell, frame=single]
 instance Monad (Graph a) where
   return  = Vertex
-  f >>= g = foldg Empty f Connect Overlay g 
+  g >>= f = foldg Empty f Connect Overlay g 
 \end{lstlisting}
+
+You can convert anything into a graph, simply by transforming it in a single vertex. Moreover, if you can produce a graph from a type \verb|a| then you can replace every vertex of a \verb|Graph a| with the result, transforming it into a \verb|Graph b|.
+
+For example, one can redefine the previously-viewed \verb|induce| as:
+
+\begin{lstlisting}[language=Haskell, frame=single]
+induce :: (a -> Bool) -> Graph a -> Graph a
+induce predicate g
+  = g >>= (\x -> if predicate x then Vertex x else Empty)
+\end{lstlisting}
+
+\subsection{Foldable}
+We can in fact define a \verb|Foldable| instance for \verb|Graph|. It could be:
+
+This means that you have access to "lists-like" functions (like \verb|elem|, \verb|null|)
+
 \end{document}
