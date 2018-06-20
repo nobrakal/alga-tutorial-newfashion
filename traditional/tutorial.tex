@@ -126,7 +126,7 @@ As usual, \verb|(*)| is \emph{associative} (the order in which you are choosing 
 (1 * 2) * 3 == 1 * (2 * 3)
 \end{lstlisting}
 
-It is NOT \emph{commutative}:
+It is NOT \emph{commutative} (drawing an edge from vertex 1 to vertex 2 is not the same as drawing an edge from vertex 2 to vertex 1):
 \begin{lstlisting}[language=Haskell, frame=single]
 1 * 2 /= 2 * 1
 \end{lstlisting}
@@ -151,7 +151,7 @@ Whew, this is done we can  make a step forward.
 
 \section{The benefits of the definition}
 \subsection{foldg}
-On of the very advantage given by this representation is the ability to define the \verb|foldg| function, a kind of adapted fold for graph:
+On of the very advantage given by this representation is the ability to define the \verb|foldg| function, a kind of adapted \verb|fold| for graph:
 \begin{lstlisting}[language=Haskell, frame=single]
 foldg :: b -> (a -> b) -> (b -> b -> b)
       -> (b -> b -> b) -> Graph a -> b
@@ -201,7 +201,7 @@ induce predicate = foldg
   undefined
 \end{lstlisting}
  
-And finally do we need to touch connection between base graphs ? Not at all! Remember, \verb|Empty| is the neutral element of \emph{both} \verb|Connect| and \verb|Overlay|. So we can leave our empty graphs inside the structure without problem (don't worry, the real implementation get rid of these empty leaves). So we come to
+And finally do we need to touch connection between base graphs ? Not at all! Remember, \verb|Empty| is the neutral element of \emph{both} \verb|Connect| and \verb|Overlay|. So we can leave our empty graphs inside the structure without problem (don't worry, the real implementation get rid of these empty leaves). So we come to:
 
 \begin{lstlisting}[language=Haskell, frame=single]
 induce :: (a -> Bool) -> Graph a -> Graph a
@@ -214,4 +214,27 @@ induce predicate = foldg
 
 So simple, isn't it ?
  
+\section{Useful instances}
+Alga's graphs are instance of some classical class
+
+\subsection{Functor}
+Not so surprisingly, \verb|Graph| is an instance of \verb|Functor|
+\begin{lstlisting}[language=Haskell, frame=single]
+instance Functor (Graph a) where
+  fmap _ Empty = Empty
+  fmap f (Vertex a) = Vertex $ f a
+  fmap f (Overlay a b) = Overlay (fmap f a) (fmap f b)
+  fmap f (Connect a b) = Connect (fmap f a) (fmap f b)
+\end{lstlisting}
+ 
+This means that if you have something to transform a \verb|a| in a \verb|b| then you can transform a \verb|Graph a| into a \verb|Graph b|
+ 
+Alert ! Alert ! Haskeller's alarm ring ! If there is a \verb|Functor| instance, is there a \verb|Monad| one ?
+\subsection{Monad}
+\verb|Graph| are indeed a \verb|Monad| instance:
+\begin{lstlisting}[language=Haskell, frame=single]
+instance Monad (Graph a) where
+  return  = Vertex
+  f >>= g = foldg Empty f Connect Overlay g 
+\end{lstlisting}
 \end{document}
