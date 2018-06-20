@@ -166,7 +166,7 @@ In other words, the \verb|foldg| function take a base case for \verb|Empty| grap
 
 \subsection{Transpose}
 
-We have a wonderful graph and we want to \verb|transpose| it. Using \verb|foldg| this is a piece of cake:
+We have a wonderful graph and we want to \verb|transpose| it. \verb|Transposing| an oriented graph consist in inverting the orientation of all edges. Using \verb|foldg| this is a piece of cake:
 
 \begin{lstlisting}[language=Haskell, frame=single]
 transpose :: Graph a -> Graph a
@@ -215,7 +215,7 @@ induce predicate = foldg
 So simple, isn't it ?
  
 \section{Useful instances}
-Alga's graphs are instance of some classical class
+Alga's graphs are instance of some classical class:
 
 \subsection{Functor}
 Not so surprisingly, \verb|Graph| is an instance of \verb|Functor|
@@ -250,8 +250,23 @@ induce predicate g
 \end{lstlisting}
 
 \subsection{Foldable}
-We can in fact define a \verb|Foldable| instance for \verb|Graph|. It could be:
+We can in fact define a \verb|Foldable| instance for \verb|Graph|.
 
-This means that you have access to "lists-like" functions (like \verb|elem|, \verb|null|)
+This means that you have access to "lists-like" functions (like \verb|elem|, \verb|null|). It provide also a \verb|toList| function, but WARNING, this is not what you think ! It literally transform a graph into a list, so if you had a self-loop, then you will have two times the same vertex.
+
+In fact, you can use the \verb|Foldable| instance by thinking a graph like a list. For example, 
+
+\begin{center}
+	\includegraphics[scale=0.5]{figspng/foldable.png}
+\end{center}
+
+\begin{lstlisting}[language=Haskell, frame=single]
+toList ((0 + 1) + ((0*2) + 3)) == [0,1,0,2,3]
+\end{lstlisting}
+
+\subsection{Traversable}
+More than \verb|Foldable| you have a \verb|Traversable| instance for \verb|Graph|.
+
+Mainly, you can use \verb|sequence :: Monad m => t (m a) -> m (t a)|. Quickly, you can "strip-out" a monadic effects. For example, if you have a \verb|Graph (IO a)| with leaves producing IO effects, you can have a \verb|IO (Graph a)|, considering all the graph as \verb|IO|.
 
 \end{document}
