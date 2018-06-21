@@ -375,12 +375,12 @@ In fact, you can use the \verb|Foldable| instance by thinking a graph like a lis
 toList ((0 + 1) + ((0*2) + 3)) == [0,1,0,2,3]
 \end{lstlisting}
 
-Alga is providing a faster \verb|toList| based on \verb|vertexSet| and thus, requiring an \verb|Ord| instance on the vertices.
+Alga is providing a faster \verb|toList| based on \verb|vertexSet| and thus, requiring an \verb|Ord| instance on the vertices. Moreover, \verb|vertexList| give vertices in \emph{ascending order}
 \\
 Keep this in mind:
 \begin{lstlisting}[language=Haskell, frame=single]
 toList /= vertexList
-nub . toList == vertexList
+sort . nub . toList == vertexList
 \end{lstlisting}
 
 \subsection{Traversable}
