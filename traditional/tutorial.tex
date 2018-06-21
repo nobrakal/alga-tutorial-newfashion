@@ -153,7 +153,7 @@ And it has \verb|Empty| as a neutral element (connecting an Empty graph to anoth
 1 * Empty == 1 == Empty * 1
 \end{lstlisting}
 
-It can absorb (connecting three times the same graph is the same as connecting two times the same graph)
+It can saturate (connecting three times the same graph is the same as connecting two times the same graph)
 \begin{lstlisting}[language=Haskell, frame=single]
 1 * 1 * 1 == 1 * 1
 \end{lstlisting}
@@ -161,7 +161,7 @@ It can absorb (connecting three times the same graph is the same as connecting t
 Why it is not \emph{idempotent} ? Because connecting a vertex with himself allow to create a \emph{loop}:
 
 \begin{center}
-	\includegraphics[scale=0.5]{figspng/absorb.png}
+	\includegraphics[scale=0.5]{figspng/saturate.png}
 \end{center}
 
 \subsection{The two together}
