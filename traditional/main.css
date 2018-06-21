@@ -24,3 +24,12 @@ h1.title::before {
   content: none;
   counter-increment: none;
 }
+
+pre {
+  padding: 0.5%;
+}
+
+.verbated {
+  background-color: lightgrey;
+  padding: 0.1%;
+}
