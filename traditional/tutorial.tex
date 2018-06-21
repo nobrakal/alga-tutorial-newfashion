@@ -281,6 +281,14 @@ removeVertex :: a -> Graph a -> Graph a
 removeVertex x = induce (/=x)
 \end{lstlisting}
 
+\subsection{hasEdge}
+\verb|foldg| and \verb|induce| are so cool that a good part of the Alga API is made from them. For example, let's take a look at the \verb|hasEdge| definition:
+\begin{lstlisting}[language=Haskell, frame=single]
+hasEdge :: a -> a -> Graph a -> Graph a
+hasEdge u v = (Connect (Vertex u) (Vertex v) `isSubgraphOf`) . induce (`elem` [u, v])
+\end{lstlisting}
+To check if a graph contains an edge from $x$ to $y$, you can remove every vertices different of $x$ and $y$, and then check if the edge \emph{alone} is a sub-graph of the induced sub-graph.
+
 \section{The problems of the definition}
 \subsection{Equality}
 There is no canonical way to define a graph in alga. For example:
@@ -352,7 +360,10 @@ induce predicate g
 \subsection{Foldable}
 We can in fact define a \verb|Foldable| instance for \verb|Graph|.
 
-This means that you have access to "lists-like" functions (like \verb|elem|, \verb|null|). It provide also a \verb|toList| function, but WARNING, this is not what you think ! It literally transform a graph into a list, so if you had a self-loop or any time two vertices, then you will have two times the same vertex.
+This means that you have access to "lists-like" functions (like \verb|elem|, \verb|null|). 
+
+\subsubsection{toList}
+It provide also a \verb|toList| function, but WARNING, this is not what you think ! It literally transform a graph into a list, so if you had a self-loop or any time two vertices, then you will have two times the same vertex.
 
 In fact, you can use the \verb|Foldable| instance by thinking a graph like a list. For example, 
 
@@ -364,6 +375,8 @@ In fact, you can use the \verb|Foldable| instance by thinking a graph like a lis
 toList ((0 + 1) + ((0*2) + 3)) == [0,1,0,2,3]
 \end{lstlisting}
 
+Alga is providing a faster \verb|toList| based on \verb|vertexSet| and thus, requiring an \verb|Ord| instance on the vertices.
+\\
 Keep this in mind:
 \begin{lstlisting}[language=Haskell, frame=single]
 toList /= vertexList
