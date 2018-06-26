@@ -443,7 +443,7 @@ handleRequestM (Disconnect a b) = removeEdge a b
 \end{lstlisting}
 
 \subsection{Space is important}
-Your company is looking to have many users, so maybe the \verb|Connect| is not very wise. On the advice of your superior, you can changing it to:
+Your company is looking to have many users, so maybe the \verb|Connect| is not very wise. On the advice of your superior, you can change it to:
 \begin{lstlisting}[language=Haskell, frame=single]
 handleRequestM (Connect a b) = 
   (>>=) (\x -> if x == a 
@@ -451,7 +451,7 @@ handleRequestM (Connect a b) =
     else Vertex x )
 \end{lstlisting}
 
-This will take longer to add a connection, but you will ensure that your graph will not be growing too fast.
+This will take longer to add a connection, but you will ensure that your graph will not be growing too fast:
 
 \subsection{Inspection}
 Viewing that you implemented your function very quickly, you are being asked to help one of your co-worker on his function. He was working about the \verb|getFollowing :: User -> Graph User -> [User]| function.
@@ -461,7 +461,23 @@ One possible way is to use the \verb|edgeList :: Ord a => Graph a -> [(a,a)]| fu
 \begin{lstlisting}[language=Haskell, frame=single]
 getFollowing :: User -> Graph User -> [User]
 getFollowing u =
- map snd . filter (\(u',_) -> u' == u ) . edgeList
+  map snd . filter (\(u',_) -> u' == u ) . edgeList
+\end{lstlisting}
+
+you can even implement blindly the \verb|getFollowers| function:
+\begin{lstlisting}[language=Haskell, frame=single]
+getFollowers :: User -> Graph User -> [User]
+getFollowers u =
+  map fst . filter (\(_,u') -> u' == u ) . edgeList
+\end{lstlisting}
+
+\subsection{Going IO}
+Ok, pure \verb|Graph| inspection is cool, but how do inspect but with IO. Your superior want to know from time to time who is connected. He has wrote \verb|isConnected :: User -> IO Bool|, and he is asking you to write \verb|numberOfConnected| \verb|:: Graph User -> IO Int|. Using \verb|traverse|, you quickly answer:
+\begin{lstlisting}[language=Haskell, frame=single]
+numberOfConnected :: Graph User -> IO Int
+numberOfConnected = fmap (length . filter id) .
+  traverse isConnected . 
+  vertexList
 \end{lstlisting}
 
 \end{document}
