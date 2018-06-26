@@ -158,7 +158,7 @@ It can saturate (connecting three times the same graph is the same as connecting
 1 * 1 * 1 == 1 * 1
 \end{lstlisting}
 
-Why it is not \emph{idempotent} ? Because connecting a vertex with himself allow to create a \emph{loop}:
+Why \verb|(*)| is not \emph{idempotent} ? Because connecting a vertex with himself allow to create a \emph{loop}:
 
 \begin{center}
 	\includegraphics[scale=0.5]{figspng/saturate.png}
@@ -311,6 +311,31 @@ Overlay (Vertex 1) (Vertex 2)
 Overlay (Vertex 2) (Vertex 1)
 == False
 \end{lstlisting}
+
+\subsection{Take care when defining functions}
+Here is a nasty function that you can define:
+\begin{lstlisting}[language=Haskell, frame=single]
+close : Graph A -> Graph A
+close Empty         = Empty
+close (Vertex x)    = Vertex x
+close (Overlay x y) = Connect x y
+close (Connect x y) = Connect x y
+\end{lstlisting}
+
+Do you see the problem ?
+\begin{lstlisting}[language=Haskell, frame=single]
+>>> let x = Vertex 0
+>>> let y = Overlay (Vertex 0) (Vertex 0)
+>>> x == y
+True
+>>> print (close x)
+Vertex 0
+>>> print (close y)
+(Vertex 0) * (Vertex 0)
+>>> close x == close y
+False
+\end{lstlisting}
+For the moment, one can mess the internal structure !
  
 \section{Useful instances}
 Alga's graphs are instance of some classical Haskell's \verb|Class|:
@@ -386,6 +411,57 @@ sort . nub . toList == vertexList
 \subsection{Traversable}
 More than \verb|Foldable| you have a \verb|Traversable| instance for \verb|Graph|.
 
-Mainly, you can use \verb|sequence :: Monad m => t (m a) -> m (t a)|. Quickly, you can "strip-out" a monadic effects. For example, if you have a \verb|Graph (IO a)| with leaves producing IO effects, you can have a \verb|IO (Graph a)|, considering all the graph as \verb|IO|.
+Mainly, you can use \verb|sequence :: Monad m => t (m a) -> m (t a)|. Quickly, you can "strip-out" a monadic effects. For example, if you have a \verb|Graph (Maybe a)| with leaves set as \verb|Maybe a|, you can have a \verb|Maybe (Graph a)|, set to \verb|Nothing| is there was one \verb|Nothing| leaf, and \verb|Just gr| if there was \emph{only} \verb|Just| leaves.
+
+\section{An example: A social network}
+\subsection{The goal}
+
+Ok, now we are wanting to build something real with all of this. Let's say a social network: one can represent them easily through graphs.
+The marketing team analysed the market, and decided to make something "à la Twitter". 
+
+\subsection{handleRequest}
+The staff meeting has choose you to build the \verb|handleRequest| function:
+\begin{lstlisting}[language=Haskell, frame=single]
+type User = Int
+
+data RequestM = AddUser User
+			  | RemoveUser User
+			  | Connect User User
+			  | Disconnect User User
+
+handleRequestM :: RequestM -> Graph User -> Graph User
+\end{lstlisting}
+
+Ok this is now a pretty simple job, and the implementation is straightforward: 
+\begin{lstlisting}[language=Haskell, frame=single]
+handleRequestM :: RequestM -> Graph User -> Graph User
+handleRequestM (AddUser a) = Overlay (Vertex a)
+handleRequestM (RemoveUser a) = removeVertex a
+handleRequestM (Connect a b) = 
+	Overlay (Connect (Vertex a) (Vertex b))
+handleRequestM (Disconnect a b) = removeEdge a b
+\end{lstlisting}
+
+\subsection{Space is important}
+Your company is looking to have many users, so maybe the \verb|Connect| is not very wise. On the advice of your superior, you can changing it to:
+\begin{lstlisting}[language=Haskell, frame=single]
+handleRequestM (Connect a b) = 
+  (>>=) (\x -> if x == a 
+    then Connect (Vertex x) (Vertex b)
+    else Vertex x )
+\end{lstlisting}
+
+This will take longer to add a connection, but you will ensure that your graph will not be growing too fast.
+
+\subsection{Inspection}
+Viewing that you implemented your function very quickly, you are being asked to help one of your co-worker on his function. He was working about the \verb|getFollowing :: User -> Graph User -> [User]| function.
+
+One possible way is to use the \verb|edgeList :: Ord a => Graph a -> Set (a,a)| function.
+
+\begin{lstlisting}[language=Haskell, frame=single]
+getFollowing :: User -> Graph User -> [User]
+getFollowing u =
+ map snd . filter (\(u',_) -> u' == u ) . edgeList
+\end{lstlisting}
 
 \end{document}
