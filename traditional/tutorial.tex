@@ -57,8 +57,8 @@ So it says:
 
 \end{enumerate}
 
-Simple, no ?
-...
+Simple, no?
+\ldots
 Well ok this is not a standard way to see a graph, but don't worry, you will get used to it.
 
 Just remember: \emph{The only way to create edges is using} \verb|Connect|.
@@ -108,9 +108,9 @@ instance Num a => Num (Graph a) where
 	negate      = id
 \end{lstlisting}
 
-This means that, in a context of a \verb|Graph|, we have \verb|Vertex 1 == 1|, which is quite useful !
+This means that, in a context of a \verb|Graph|, we have \verb|Vertex 1 == 1|, which is quite useful!
 
-Do you see why alga is an implementation of an \emph{algebra} of graphs ? There is a lot of maths here ! No please don't run away like you have seen a zombie in a graveyard ! Don't worry, this is not-so-difficult math.
+Do you see why alga is an implementation of an \emph{algebra} of graphs? There is a lot of maths here! No please don't run away like you have seen a zombie in a graveyard!  Don't worry, this is not-so-difficult math.
 
 \paragraph{Note}
 We will use the \verb|(+)| and \verb|(*)| notation, but these laws are true even when dealing with non-Num instances.
@@ -158,14 +158,14 @@ It can saturate (connecting three times the same graph is the same as connecting
 1 * 1 * 1 == 1 * 1
 \end{lstlisting}
 
-Why \verb|(*)| is not \emph{idempotent} ? Because connecting a vertex with himself allow to create a \emph{loop}:
+Why \verb|(*)| is not \emph{idempotent}? Because connecting a vertex with himself allow to create a \emph{loop}:
 
 \begin{center}
 	\includegraphics[scale=0.5]{figspng/saturate.png}
 \end{center}
 
 \subsection{The two together}
-Do you remind when you have discovered that you can mix $+$ and $*$ in the same equation ? This is the same thing here !
+Do you remind when you have discovered that you can mix $+$ and $*$ in the same equation? This is the same thing here!
 \begin{lstlisting}[language=Haskell, frame=single]
 1 * (2 + 3) == 1 * 2 + 1 * 3
 \end{lstlisting}
@@ -180,7 +180,7 @@ Whew, this is done we can  make a step forward.
 \subsection{Making graphs}
 I haven't answered on question yet:
 \begin{quote}
-	Is the definition usable ? Can we represent every graph in alga's representation ?
+	Is the definition usable? Can we represent every graph in alga's representation ?
 \end{quote}
 
 Let's try to answer this \emph{important} question. As said, graphs are (almost all the time) defined as a pair $V$ of vertices and $E \subseteq V \times V$ a set of edges. So to prove that we can represents any graph, we need to define a function \verb|create :: [a] -> [(a,a)] -> Graph a| that create a graph from this standard representation.
@@ -192,7 +192,7 @@ vertices :: [a] -> Graph a
 vertices = foldr (\v g -> Overlay (Vertex v) g) Empty
 \end{lstlisting}
 
-Any idea how to do \verb|edges :: [(a,a)] -> Graph a| ? The same way, obviously:
+Any idea how to do \verb|edges :: [(a,a)] -> Graph a|? The same way, obviously:
 
 \begin{lstlisting}[language=Haskell, frame=single]
 vertices :: [a] -> Graph a
@@ -201,13 +201,13 @@ vertices = foldr
   Empty
 \end{lstlisting}
 
-And so, what can be our \verb|create :: [a] -> [(a,a)] -> Graph a| ? Simply:
+And so, what can be our \verb|create :: [a] -> [(a,a)] -> Graph a|? Simply:
 \begin{lstlisting}[language=Haskell, frame=single]
 create :: [a] -> [(a,a)] -> Graph a
 create v e = Overlay (vertices v) (edges e)
 \end{lstlisting}
 
-So we have defined the desired function, thus we can safely use this definition !
+So we have defined the desired function, thus we can safely use this definition!
 
 \section{The benefits of the definition}
 \subsection{foldg}
@@ -235,11 +235,11 @@ transpose = foldg Empty Vertex Overlay (flip Connect)
 
 \subsection{Induce}
 
-Still not convinced ? Let's try to build an induced sub-graph. An induced sub-graph is a sub-graph that "forget" about some vertices and all edges to and from these vertices.
+Still not convinced? Let's try to build an induced sub-graph. An induced sub-graph is a sub-graph that "forget" about some vertices and all edges to and from these vertices.
 
 So, we are going to code the \verb|induce :: (a -> bool) -> Graph a -> Graph a| function. We will use \verb|foldg| of course
 
-What is the base case ? Do we need to change an \verb|Empty| graph ? No of course:
+What is the base case? Do we need to change an \verb|Empty| graph? No of course:
 
 \begin{lstlisting}[language=Haskell, frame=single]
 induce :: (a -> Bool) -> Graph a -> Graph a
@@ -250,7 +250,7 @@ induce predicate = foldg
   undefined
 \end{lstlisting}
 
-Then if we encounter a vertex, we need to verify if it satisfy the predicate. If it does not, we will simply replace it... let's say by the empty graph !
+Then if we encounter a vertex, we need to verify if it satisfy the predicate. If it does not, we will simply replace it\ldots let's say by the empty graph!
 
 \begin{lstlisting}[language=Haskell, frame=single]
 induce :: (a -> Bool) -> Graph a -> Graph a
@@ -261,7 +261,7 @@ induce predicate = foldg
   undefined
 \end{lstlisting}
  
-And finally do we need to touch connection between base graphs ? Not at all! Remember, \verb|Empty| is the neutral element of \emph{both} \verb|Connect| and \verb|Overlay|. So we can leave our empty graphs inside the structure without problem (don't worry, the real implementation get rid of these empty leaves). So we come to:
+And finally do we need to touch connection between base graphs? Not at all! Remember, \verb|Empty| is the neutral element of \emph{both} \verb|Connect| and \verb|Overlay|. So we can leave our empty graphs inside the structure without problem (don't worry, the real implementation get rid of these empty leaves). So we come to:
 
 \begin{lstlisting}[language=Haskell, frame=single]
 induce :: (a -> Bool) -> Graph a -> Graph a
@@ -272,7 +272,7 @@ induce predicate = foldg
   Connect
 \end{lstlisting}
 
-So simple, isn't it ?
+So simple, isn't it?
  
 This even allow us to define:
 
@@ -322,7 +322,7 @@ close (Overlay x y) = Connect x y
 close (Connect x y) = Connect x y
 \end{lstlisting}
 
-Do you see the problem ?
+Do you see the problem?
 \begin{lstlisting}[language=Haskell, frame=single]
 >>> let x = Vertex 0
 >>> let y = Overlay (Vertex 0) (Vertex 0)
@@ -335,7 +335,7 @@ Vertex 0
 >>> close x == close y
 False
 \end{lstlisting}
-For the moment, one can mess the internal structure !
+For the moment, one can mess the internal structure!
  
 \section{Useful instances}
 Alga's graphs are instance of some classical Haskell's \verb|Class|:
@@ -362,7 +362,7 @@ This means that if you have something to transform a \verb|a| in a \verb|b| then
 If you want to test it, the first graph in alga's representation is: \verb|1 * (2 + 5) * 0|
 \\
 \\
-Alert ! Alert ! Haskeller's alarms are ringing ! If there is a \verb|Functor| instance, is there a \verb|Monad| one ?
+Alert! Alert! Haskeller's alarms are ringing! If there is a \verb|Functor| instance, is there a \verb|Monad| one?
 
 \subsection{Monad}
 \verb|Graph| are indeed a \verb|Monad| instance:
@@ -388,7 +388,7 @@ We can in fact define a \verb|Foldable| instance for \verb|Graph|.
 This means that you have access to "lists-like" functions (like \verb|elem|, \verb|null|). 
 
 \subsubsection{toList}
-It provide also a \verb|toList| function, but WARNING, this is not what you think ! It literally transform a graph into a list, so if you had a self-loop or any time two vertices, then you will have two times the same vertex.
+It provide also a \verb|toList| function, but WARNING, this is not what you think! It literally transform a graph into a list, so if you had a self-loop or any time two vertices, then you will have two times the same vertex.
 
 In fact, you can use the \verb|Foldable| instance by thinking a graph like a list. For example, 
 
@@ -456,7 +456,7 @@ This will take longer to add a connection, but you will ensure that your graph w
 \subsection{Inspection}
 Viewing that you implemented your function very quickly, you are being asked to help one of your co-worker on his function. He was working about the \verb|getFollowing :: User -> Graph User -> [User]| function.
 
-One possible way is to use the \verb|edgeList :: Ord a => Graph a -> Set (a,a)| function.
+One possible way is to use the \verb|edgeList :: Ord a => Graph a -> [(a,a)]| function.
 
 \begin{lstlisting}[language=Haskell, frame=single]
 getFollowing :: User -> Graph User -> [User]
